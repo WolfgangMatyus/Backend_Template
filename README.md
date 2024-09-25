@@ -1,5 +1,5 @@
 # Backend_Template
-Server mit Node.js, Express und Postgres Datenank
+Server mit Node.js, Express und Postgres Datenbank
 
 ## Install:
 node.js
