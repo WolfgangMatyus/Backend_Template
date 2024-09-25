@@ -5,7 +5,8 @@
     "main": "server.js",
     "scripts": {
         "start": "node server.js",
-        "test": "jest"
+        "test": "jest",
+        "test-db": "node project-root/tests/test-db.js"
     },
     "dependencies": {
         "body-parser": "^1.20.3",

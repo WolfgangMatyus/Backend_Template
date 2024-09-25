@@ -1,6 +1,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const membersRoute = require('../routes/members');
+const membersRoute = require('project-root/src/routes/members');
 const app = express();
 
 app.use(bodyParser.json());

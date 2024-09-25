@@ -1,7 +1,7 @@
 const request = require('supertest');
 const express = require('express');
 const bodyParser = require('body-parser');
-const membersRoute = require('../routes/members'); // Importiere die Route
+const membersRoute = require('../src/routes/members'); // Importiere die Route
 
 // Erstelle eine Test-Instanz der Express-App
 const app = express();
