@@ -1,0 +1,16 @@
+{
+    "name": "backend_template",
+    "version": "1.0.0",
+    "description": "Backend template for Web Development",
+    "main": "server.js",
+    "scripts": {
+        "start": "node server.js"
+    },
+    "dependencies": {
+        "body-parser": "^1.20.3",
+        "express": "^4.21.0",
+        "pg": "^8.13.0"
+    },
+    "author": "Dein Name",
+    "license": "ISC"
+}
