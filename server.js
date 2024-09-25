@@ -1,14 +1,13 @@
-const { createServer } = require('node:http');
+const express = require('express');
+const bodyParser = require('body-parser');
+const membersRoute = require('./routes/members');
+const app = express();
 
-const hostname = '127.0.0.1';
-const port = 3000;
+app.use(bodyParser.json());
 
-const server = createServer((req, res) => {
-  res.statusCode = 200;
-  res.setHeader('Content-Type', 'text/plain');
-  res.end('Hello World');
-});
+app.use('/api/v1/members', membersRoute);
 
-server.listen(port, hostname, () => {
-  console.log(`Server running at http://${hostname}:${port}/`);
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
 });

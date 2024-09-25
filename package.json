@@ -12,5 +12,15 @@
         "pg": "^8.13.0"
     },
     "author": "Dein Name",
-    "license": "ISC"
+    "license": "ISC",
+    "devDependencies": {
+        "jest": "^29.7.0",
+        "supertest": "^7.0.0"
+    },
+
+    "scripts": {
+        "test": "jest"
+    }
+
+      
 }
