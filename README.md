@@ -2,6 +2,8 @@
 Server mit Node.js, Express und Postgres Datenank
 
 ## Install:
+node.js
+postgreSQL
 
 #### Express
     npm install express
