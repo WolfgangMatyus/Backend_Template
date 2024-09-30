@@ -1,6 +1,9 @@
 # Backend_Template
 Server mit Node.js, Express und Postgres Datenbank
 
+## start:
+    npm server.js 
+
 ## Install:
 node.js
 
