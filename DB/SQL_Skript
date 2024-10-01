@@ -1,0 +1,127 @@
+
+-- Mitglieder Tabelle
+
+CREATE TABLE members (
+    id SERIAL PRIMARY KEY,
+    first_name VARCHAR(50) NOT NULL,
+    last_name VARCHAR(50) NOT NULL,
+    date_of_birth DATE NOT NULL,
+    address VARCHAR(255) NOT NULL,
+    postal_code VARCHAR(10) NOT NULL,
+    city VARCHAR(50) NOT NULL,
+    email VARCHAR(100) NOT NULL UNIQUE,
+    phone VARCHAR(20),
+    nationality VARCHAR(50),
+    profile_photo TEXT,
+    status VARCHAR(20) DEFAULT 'active', -- 'active', 'inactive', 'archived'
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Archivierte Mitglieder Tabelle
+
+CREATE TABLE archived_members (
+    id SERIAL PRIMARY KEY,
+    original_member_id INTEGER,
+    first_name VARCHAR(50),
+    last_name VARCHAR(50),
+    date_of_birth DATE,
+    address VARCHAR(255),
+    postal_code VARCHAR(10),
+    city VARCHAR(50),
+    email VARCHAR(100),
+    phone VARCHAR(20),
+    nationality VARCHAR(50),
+    profile_photo TEXT,
+    archived_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+
+-- Mitgliederbeiträge Tabelle
+
+CCREATE TABLE member_contributions (
+    id SERIAL PRIMARY KEY,
+    member_id INTEGER REFERENCES members(id),
+    amount DECIMAL(10, 2) NOT NULL,
+    due_date DATE NOT NULL,
+    status VARCHAR(20) DEFAULT 'pending', -- 'pending', 'paid', 'inactive'
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+
+-- Zuschüsse Tabelle
+
+CREATE TABLE grants (
+    id SERIAL PRIMARY KEY,
+    member_id INTEGER REFERENCES members(id),
+    grant_type VARCHAR(100) NOT NULL,
+    amount DECIMAL(10, 2) NOT NULL,
+    description TEXT,
+    status VARCHAR(20) DEFAULT 'active', -- 'active', 'inactive'
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+
+-- Blog Posts Tabelle
+
+CREATE TABLE blog_posts (
+    id SERIAL PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    description TEXT NOT NULL,
+    date DATE NOT NULL,
+    location VARCHAR(255),
+    images TEXT[], -- Array of image URLs/paths
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Anwesenheitsaufzeichnungen Tabelle
+
+CREATE TABLE attendance_records (
+    id SERIAL PRIMARY KEY,
+    member_id INTEGER REFERENCES members(id),
+    date_of_attendance DATE NOT NULL,
+    status VARCHAR(20) DEFAULT 'present',  -- 'present', 'absent', 'excused', 'inactive'
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+
+
+-- Benutzer Tabelle
+
+CREATE TABLE users (
+    id SERIAL PRIMARY KEY,
+    member_id INTEGER REFERENCES members(id) ON DELETE CASCADE,
+    email VARCHAR(100) NOT NULL UNIQUE,
+    password_hash TEXT NOT NULL,
+    role VARCHAR(20) DEFAULT 'member', -- 'member', 'admin', etc.
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+
+-- Trigger-Funktion zum Archivieren von Mitgliedern
+
+CREATE OR REPLACE FUNCTION archive_member() RETURNS TRIGGER AS $$
+BEGIN
+    -- Füge das Mitglied in die archivierte Tabelle ein
+    INSERT INTO archived_members (
+        original_member_id, first_name, last_name, date_of_birth, address, 
+        postal_code, city, email, phone, nationality, profile_photo
+    )
+    SELECT OLD.id, OLD.first_name, OLD.last_name, OLD.date_of_birth, OLD.address, 
+           OLD.postal_code, OLD.city, OLD.email, OLD.phone, OLD.nationality, OLD.profile_photo;
+
+    -- Setze das Mitglied als inaktiv
+    UPDATE members SET status = 'inactive', updated_at = CURRENT_TIMESTAMP WHERE id = OLD.id;
+
+    RETURN NULL;  -- Beende die Löschung (keine tatsächliche Löschung in der Mitglieder-Tabelle)
+END;
+$$ LANGUAGE plpgsql;
+
+
+-- Trigger für das Archivieren
+
+CREATE TRIGGER before_member_delete
+BEFORE DELETE ON members
+FOR EACH ROW EXECUTE FUNCTION archive_member();

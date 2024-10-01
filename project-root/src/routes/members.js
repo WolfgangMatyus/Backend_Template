@@ -1,12 +1,23 @@
 const express = require('express');
-const { registerMember, getAllMembers } = require('../controllers/membersController'); // Importiere die Route
-const { validateMemberInput } = require('../middlewares/validationMiddleware'); // Stelle sicher, dass dies korrekt ist
+const { 
+  registerMember, 
+  getAllMembers, 
+  getMemberById, 
+  updateMember 
+} = require('../controllers/membersController');
+const { validateMemberInput } = require('../middlewares/validationMiddleware');
 const router = express.Router();
 
-// POST /members
-router.post('/', validateMemberInput, registerMember); 
+// POST /api/v1/members - Mitglieder Registrierung
+router.post('/', validateMemberInput, registerMember);
 
-// GET /members/getAllMembers
-router.get('/getAllMembers', getAllMembers); 
+// GET /api/v1/members - Alle Mitglieder abrufen
+router.get('/', getAllMembers);
+
+// GET /api/v1/members/:id - Einzelnes Mitglied abrufen
+router.get('/:id', getMemberById);
+
+// PUT /api/v1/members/:id - Mitgliederprofil aktualisieren
+router.put('/:id', updateMember);
 
 module.exports = router;
