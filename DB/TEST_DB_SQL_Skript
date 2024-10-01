@@ -4,13 +4,15 @@ CREATE DATABASE test_members_db;
 -- 2. Verbinde dich mit der Testdatenbank
 \c test_members_db;
 
--- Erstelle die Mitglieder-Tabelle
+-- 1. Erstelle die Mitglieder-Tabelle
 CREATE TABLE members (
     id SERIAL PRIMARY KEY,
     first_name VARCHAR(100) NOT NULL,
     last_name VARCHAR(100) NOT NULL,
     date_of_birth DATE NOT NULL,
     address VARCHAR(255) NOT NULL,
+    postal_code VARCHAR(10) NOT NULL,  -- Beispiel für postal_code
+    city VARCHAR(100) NOT NULL,
     email VARCHAR(100) NOT NULL UNIQUE,
     phone VARCHAR(15),
     status VARCHAR(20) DEFAULT 'active', -- Z.B. 'active', 'inactive'
@@ -33,8 +35,7 @@ BEFORE UPDATE ON members
 FOR EACH ROW
 EXECUTE FUNCTION update_timestamp();
 
-
--- 4. Erstelle die Tabelle für Anwesenheitsdaten
+-- 2. Erstelle die Tabelle für Anwesenheitsdaten
 CREATE TABLE attendance_records (
     id SERIAL PRIMARY KEY,
     member_id INT REFERENCES members(id) ON DELETE CASCADE,
@@ -43,24 +44,26 @@ CREATE TABLE attendance_records (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- 5. Optional: Erstelle eine Tabelle für archivierte Mitglieder (optional)
+-- 3. Optional: Erstelle eine Tabelle für archivierte Mitglieder
 CREATE TABLE archived_members (
     id SERIAL PRIMARY KEY,
     first_name VARCHAR(100) NOT NULL,
     last_name VARCHAR(100) NOT NULL,
     date_of_birth DATE NOT NULL,
     address VARCHAR(255) NOT NULL,
+    postal_code VARCHAR(10) NOT NULL,  -- Hinzugefügt
+    city VARCHAR(100) NOT NULL,         -- Hinzugefügt
     email VARCHAR(100) NOT NULL UNIQUE,
     phone VARCHAR(15),
     status VARCHAR(20) DEFAULT 'inactive',
     archived_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- 6. Optional: Erstelle Trigger zur Archivierung von Mitgliedern
+-- 4. Optional: Erstelle Trigger zur Archivierung von Mitgliedern
 CREATE OR REPLACE FUNCTION archive_member() RETURNS TRIGGER AS $$
 BEGIN
-    INSERT INTO archived_members (first_name, last_name, date_of_birth, address, email, phone, status)
-    VALUES (OLD.first_name, OLD.last_name, OLD.date_of_birth, OLD.address, OLD.email, OLD.phone, OLD.status);
+    INSERT INTO archived_members (first_name, last_name, date_of_birth, address, postal_code, city, email, phone, status)
+    VALUES (OLD.first_name, OLD.last_name, OLD.date_of_birth, OLD.address, OLD.postal_code, OLD.city, OLD.email, OLD.phone, OLD.status);
     RETURN OLD;
 END;
 $$ LANGUAGE plpgsql;
@@ -70,9 +73,8 @@ AFTER DELETE ON members
 FOR EACH ROW
 EXECUTE FUNCTION archive_member();
 
-
--- Testdaten für Mitglieder einfügen
-INSERT INTO members (first_name, last_name, date_of_birth, address, email, phone)
+-- 5. Testdaten für Mitglieder einfügen
+INSERT INTO members (first_name, last_name, date_of_birth, address, postal_code, city, email, phone)
 VALUES
-    ('Max', 'Mustermann', '2000-01-01', 'Musterstraße 1', 'max@mustermann.de', '0123456789'),
-    ('Erika', 'Musterfrau', '1995-05-12', 'Musterstraße 2', 'erika@musterfrau.de', '0987654321');
+    ('Max', 'Mustermann', '2000-01-01', 'Musterstraße 1', '12345', 'Musterstadt', 'max@mustermann.de', '0123456789'),
+    ('Erika', 'Musterfrau', '1995-05-12', 'Musterstraße 2', '54321', 'Musterstadt', 'erika@musterfrau.de', '0987654321');
