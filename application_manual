@@ -1,0 +1,8 @@
+## User löschen?
+
+User werden nicht entfert user werden auf inaktiv gesetzt.
+
+Es wurde eigens ein Trigger Angefertigt welcher bei Statusänderung von aktive auf inaktive eine Archivierung durchführt und die Mitgliederdaten inklusive der Anwesenheitsdaten in dafür vorgesehene Archiv Tabellen auslagert.
+
+Es ist eine DELETE Route vorhanden diese löschen unwiederruflich kann aber nur von speziellen Userrollen vorgenommen werden.
+
