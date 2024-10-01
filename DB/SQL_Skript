@@ -39,7 +39,7 @@ CREATE TABLE archived_members (
 
 -- Mitgliederbeiträge Tabelle
 
-CCREATE TABLE member_contributions (
+CREATE TABLE member_contributions (
     id SERIAL PRIMARY KEY,
     member_id INTEGER REFERENCES members(id),
     amount DECIMAL(10, 2) NOT NULL,
@@ -110,7 +110,7 @@ CREATE TABLE users (
 );
 
 
--- Trigger-Funktion zum aktivieren und deaktivieren + Archivieren von Mitgliedern und Anwesenheitsaufzeichnungen
+-- Trigger-Funktion zum aktivieren und deaktivieren + Archivieren von Mitgliedern und Anwesenheitsdaten
 
 CREATE OR REPLACE FUNCTION handle_member_status_change() RETURNS TRIGGER AS $$
 BEGIN
@@ -140,5 +140,6 @@ $$ LANGUAGE plpgsql;
 CREATE TRIGGER member_status_update
 BEFORE UPDATE OF status ON members
 FOR EACH ROW
-EXECUTE FUNCTION handle_member_status_change();
+WHEN (OLD.status = 'active' AND NEW.status = 'inactive')
+EXECUTE FUNCTION handle_member_inactivation();
 
