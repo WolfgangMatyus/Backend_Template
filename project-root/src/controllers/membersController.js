@@ -56,12 +56,17 @@ const getMemberById = async (req, res) => {
 // Aktualisieren eines Mitgliedsprofils
 const updateMember = async (req, res) => {
     const { id } = req.params;
-    const { first_name, last_name, address, email, phone, postal_code, city } = req.body;
+    const { firstName, lastName, dateOfBirth, address, email, phone, postal_code, city } = req.body;
+
+    // Validierung der erforderlichen Felder
+    if (!firstName || !lastName || !dateOfBirth || !address || !email || !phone || !postal_code || !city) {
+      return res.status(400).json({ message: 'Alle Felder sind erforderlich.' });
+    }
 
     try {
         const result = await pool.query(
-            'UPDATE members SET first_name = $1, last_name = $2, address = $3, email = $4, phone = $5, postal_code = $6, city = $7 WHERE id = $8 RETURNING *',
-            [first_name, last_name, address, email, phone, postal_code, city, id]
+            'UPDATE members SET first_name = $1, last_name = $2, date_of_birth = $3, address = $4, email = $5, phone = $6, postal_code = $7, city = $8 WHERE id = $9 RETURNING *',
+            [firstName, lastName, dateOfBirth, address, email, phone, postal_code, city, id]
         );
 
         if (result.rows.length === 0) {

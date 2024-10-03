@@ -17,6 +17,8 @@ postgreSQL
     npm install pg
 #### jest und Suptertest
     npm install --save-dev jest supertest
+#### change restart mit nodemon
+    npm install -g nodemon
 
 ## Create a PostgreSQL-Database V15
 

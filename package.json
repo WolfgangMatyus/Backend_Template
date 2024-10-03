@@ -5,7 +5,7 @@
     "main": "server.js",
     "scripts": {
         "start": "node server.js",
-        "test": "set NODE_ENV=test&& jest registerMember.test.js",
+        "test-reg": "set NODE_ENV=test&& jest registerMember.test.js",
         "test-db": "node project-root/tests/test-db.js"
     },
     "dependencies": {

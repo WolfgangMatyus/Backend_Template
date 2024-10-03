@@ -8,9 +8,9 @@ const pool = require('../src/config/db'); // Stelle sicher, dass du deine Expres
 describe('POST /api/v1/members', () => {
     it('sollte ein neues Mitglied registrieren', async () => {
         const newMember = {
-            first_name: 'Max',
-            last_name: 'Mustermann',
-            date_of_birth: '2000-01-01',
+            firstName: 'Max',
+            lastName: 'Mustermann',
+            dateOfBirth: '2000-01-01',
             address: 'Musterstraße 1',
             email: 'max@mustermann.de',
             phone: '0123456789',
