@@ -20,4 +20,7 @@ router.get('/:id', getMemberById);
 // PUT /api/v1/members/:id - Mitgliederprofil aktualisieren
 router.put('/:id', updateMember);
 
+// DELETE /api/v1/members/:id - Mitglied löschen
+router.delete('/:id', deleteMember);
+
 module.exports = router;
