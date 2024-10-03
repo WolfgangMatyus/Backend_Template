@@ -3,17 +3,17 @@ const pool = require('../config/db_pg');
 // Registrierung eines neuen Mitglieds
 const registerMember = async (req, res) => {
     // Stelle sicher, dass die Variablen korrekt benannt sind, um mit dem Request-Body übereinzustimmen
-    const { first_name, last_name, date_of_birth, address, email, phone, postal_code, city } = req.body;
+    const { firstName, lastName, dateOfBirth, address, email, phone, postal_code, city } = req.body;
 
     // Validierung der erforderlichen Felder
-    if (!first_name || !last_name || !date_of_birth || !address || !email || !postal_code || !city) {
+    if (!firstName || !lastName || !dateOfBirth || !address || !email || !phone || !postal_code || !city) {
         return res.status(400).json({ message: 'Alle Felder sind erforderlich.' });
     }
 
     try {
         const result = await pool.query(
             'INSERT INTO members (first_name, last_name, date_of_birth, address, email, phone, postal_code, city) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *',
-            [first_name, last_name, date_of_birth, address, email, phone, postal_code, city] // Füge city hinzu
+            [firstName, lastName, dateOfBirth, address, email, phone, postal_code, city] // Füge city hinzu
         );
 
         res.status(201).json({
