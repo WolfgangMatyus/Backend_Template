@@ -3,17 +3,17 @@ const pool = require('../config/db_pg');
 // Registrierung eines neuen Mitglieds
 const registerMember = async (req, res) => {
     // Stelle sicher, dass die Variablen korrekt benannt sind, um mit dem Request-Body übereinzustimmen
-    const { firstName, lastName, dateOfBirth, address, email, phone, postal_code, city } = req.body;
+    const { firstName, lastName, dateOfBirth, address, email, phone, postal_code, nation, city } = req.body;
 
     // Validierung der erforderlichen Felder
-    if (!firstName || !lastName || !dateOfBirth || !address || !email || !phone || !postal_code || !city) {
+    if (!firstName || !lastName || !dateOfBirth || !address || !email || !phone || !postal_code || !nation || !city) {
         return res.status(400).json({ message: 'Alle Felder sind erforderlich.' });
     }
 
     try {
         const result = await pool.query(
-            'INSERT INTO members (first_name, last_name, date_of_birth, address, email, phone, postal_code, city) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *',
-            [firstName, lastName, dateOfBirth, address, email, phone, postal_code, city] // Füge city hinzu
+            'INSERT INTO members (first_name, last_name, date_of_birth, address, email, phone, postal_code, nationality, city) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *',
+            [firstName, lastName, dateOfBirth, address, email, phone, postal_code, nation, city] // Füge city hinzu
         );
 
         res.status(201).json({
@@ -56,17 +56,17 @@ const getMemberById = async (req, res) => {
 // Aktualisieren eines Mitgliedsprofils
 const updateMember = async (req, res) => {
     const { id } = req.params;
-    const { firstName, lastName, dateOfBirth, address, email, phone, postal_code, city } = req.body;
+    const { firstName, lastName, dateOfBirth, address, email, phone, postal_code, nation, city } = req.body;
 
     // Validierung der erforderlichen Felder
-    if (!firstName || !lastName || !dateOfBirth || !address || !email || !phone || !postal_code || !city) {
+    if (!firstName || !lastName || !dateOfBirth || !address || !email || !phone || !postal_code || !nation || !city) {
       return res.status(400).json({ message: 'Alle Felder sind erforderlich.' });
     }
 
     try {
         const result = await pool.query(
-            'UPDATE members SET first_name = $1, last_name = $2, date_of_birth = $3, address = $4, email = $5, phone = $6, postal_code = $7, city = $8 WHERE id = $9 RETURNING *',
-            [firstName, lastName, dateOfBirth, address, email, phone, postal_code, city, id]
+            'UPDATE members SET first_name = $1, last_name = $2, date_of_birth = $3, address = $4, email = $5, phone = $6, postal_code = $7, nationality= $8, city = $9 WHERE id = $10 RETURNING *',
+            [firstName, lastName, dateOfBirth, address, email, phone, postal_code, nation, city, id]
         );
 
         if (result.rows.length === 0) {
@@ -104,4 +104,4 @@ const deleteMember = async (req, res) => {
   }
 };
 
-module.exports = { registerMember, updateMember, deleteMember, getMemberById, getAllMembers }; // Stelle sicher, dass du die deleteMember-Funktion exportierst.
+module.exports = { registerMember, updateMember, deleteMember, getMemberById, getAllMembers };

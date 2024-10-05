@@ -3,7 +3,8 @@ const {
   registerMember, 
   getAllMembers, 
   getMemberById, 
-  updateMember 
+  updateMember,
+  deleteMember 
 } = require('../controllers/membersController');
 const { validateMemberInput } = require('../middlewares/validationMiddleware');
 const router = express.Router();

@@ -4,9 +4,10 @@
     "description": "Backend template for Web Development",
     "main": "server.js",
     "scripts": {
+        "test": "jest",
         "start": "node server.js",
-        "test-reg": "set NODE_ENV=test&& jest registerMember.test.js",
-        "test-db": "node project-root/tests/test-db.js"
+        "test-db": "node project-root/tests/dbcon.test.js",
+        "test-member": "node project-root/tests/members.test.js"
     },
     "dependencies": {
         "body-parser": "^1.20.3",
