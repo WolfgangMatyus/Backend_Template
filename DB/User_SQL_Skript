@@ -89,10 +89,11 @@ CREATE TABLE archived_attendance_records (
     archived_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Rollen Tabelle mit UUID
+-- Rollen Tabelle mit UUID und Hierarchie
 CREATE TABLE roles (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),    -- UUID als Primärschlüssel
-    role_name VARCHAR(50) NOT NULL UNIQUE              -- Rollenname (z.B. 'user', 'trainer', 'funktionär', 'admin')
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    role_name VARCHAR(50) NOT NULL UNIQUE,
+    parent_id UUID REFERENCES roles(id) ON DELETE SET NULL -- Referenz zur übergeordneten Rolle
 );
 
 -- Benutzer Tabelle mit UUID
@@ -112,10 +113,11 @@ CREATE TABLE user_roles (
 );
 
 -- Rollen einfügen
-INSERT INTO roles (id, role_name) VALUES (uuid_generate_v4(), 'member');
-INSERT INTO roles (id, role_name) VALUES (uuid_generate_v4(), 'trainer');
-INSERT INTO roles (id, role_name) VALUES (uuid_generate_v4(), 'funktionär');
-INSERT INTO roles (id, role_name) VALUES (uuid_generate_v4(), 'admin');
+INSERT INTO roles (id, role_name, parent_id) VALUES (uuid_generate_v4(), 'user', NULL);
+INSERT INTO roles (id, role_name, parent_id) VALUES (uuid_generate_v4(), 'trainer', (SELECT id FROM roles WHERE role_name='user'));
+INSERT INTO roles (id, role_name, parent_id) VALUES (uuid_generate_v4(), 'organ', (SELECT id FROM roles WHERE role_name='user'));
+INSERT INTO roles (id, role_name, parent_id) VALUES (uuid_generate_v4(), 'admin', NULL);
+
 
 -- Trigger-Funktion zum aktivieren, deaktivieren und archivieren von Mitgliedern und Anwesenheitsdaten
 

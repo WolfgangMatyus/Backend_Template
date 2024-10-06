@@ -1,9 +1,10 @@
 const bcrypt = require('bcryptjs');
 const User = require('../models/user'); // Importiere das User-Modell
+const Role = require('../models/role'); // Importiere das Role-Modell
 
 // Benutzer anlegen (Create)
 const createUser = async (req, res) => {
-    const { name, email, password, memberId } = req.body; // memberId aus dem Body extrahieren
+    const { name, email, password, memberId, role } = req.body; // memberId und role aus dem Body extrahieren
 
     try {
         // Überprüfen, ob der Benutzer bereits existiert
@@ -22,6 +23,14 @@ const createUser = async (req, res) => {
             password_hash,
             member_id: memberId // memberId hier setzen
         });
+
+        // Rolle zuweisen, wenn angegeben
+        if (role) {
+            const roleRecord = await Role.findOne({ where: { role_name: role } });
+            if (roleRecord) {
+                await user.addRole(roleRecord); // Angenommen, du hast eine viele-zu-viele-Beziehung
+            }
+        }
 
         res.status(201).json({ 
             id: user.id, 
@@ -49,7 +58,7 @@ const getAllUsers = async (req, res) => {
 // Benutzer aktualisieren (Update)
 const updateUser = async (req, res) => {
     const { id } = req.params;
-    const { memberId, email, password } = req.body; // memberId aus dem Body extrahieren
+    const { memberId, email, password, role } = req.body; // memberId und role aus dem Body extrahieren
 
     try {
         const user = await User.findByPk(id);
@@ -74,6 +83,14 @@ const updateUser = async (req, res) => {
         // Aktualisiere die Benutzerinformationen
         user.email = email || user.email;
 
+        // Rolle aktualisieren, wenn angegeben
+        if (role) {
+            const roleRecord = await Role.findOne({ where: { role_name: role } });
+            if (roleRecord) {
+                await user.setRoles([roleRecord]); // Setze die neue Rolle
+            }
+        }
+
         await user.save();
 
         res.json({ message: 'User updated', user });
@@ -82,7 +99,6 @@ const updateUser = async (req, res) => {
         res.status(500).json({ message: 'Server error' });
     }
 };
-
 
 // Benutzer löschen (Delete)
 const deleteUser = async (req, res) => {
