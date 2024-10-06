@@ -1,6 +1,6 @@
 const { generateToken } = require('./jwt');
-const bcrypt = require('bcrypt');
-const db = require('../db'); // Passe den Pfad zu deiner DB-Logik an
+const bcrypt = require('bcryptjs');
+const db = require('../config/db'); // Passe den Pfad zu deiner DB-Logik an
 
 // Funktion für die Benutzeranmeldung
 async function login(req, res) {

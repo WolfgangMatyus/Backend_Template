@@ -7,6 +7,7 @@
         -controllers
         -middlewares
         -routes
+        -security
     -test
 package.json
 server.js
