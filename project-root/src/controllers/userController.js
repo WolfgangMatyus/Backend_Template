@@ -62,14 +62,21 @@ const updateUser = async (req, res) => {
             user.password_hash = await bcrypt.hash(password, 10);
         }
 
+        // Überprüfen, ob die memberId gültig ist, wenn sie bereitgestellt wird
+        if (memberId) {
+            const memberExists = await Member.findByPk(memberId);
+            if (!memberExists) {
+                return res.status(400).json({ message: 'Mitglied nicht gefunden.' });
+            }
+            user.member_id = memberId; // memberId aktualisieren, wenn bereitgestellt
+        }
+
         // Aktualisiere die Benutzerinformationen
         user.email = email || user.email;
-        user.member_id = memberId || user.member_id; // memberId aktualisieren, wenn bereitgestellt
 
-        // Speichere die Änderungen
-        const updatedUser = await user.save(); // Speichern und das aktualisierte User-Objekt erhalten
+        await user.save();
 
-        res.json({ message: 'User updated', user: updatedUser });
+        res.json({ message: 'User updated', user });
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Server error' });
