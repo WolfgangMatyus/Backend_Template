@@ -19,6 +19,15 @@ postgreSQL
     npm install bcryptjs jsonwebtoken express-validator
 #### jest und Suptertest
     npm install --save-dev jest supertest
+#### sequelize für ORM
+    npm install sequelize
+#### PostgreSQL-Treiber für DB-Kommunikation
+    npm install pg pg-hstore
+
+### Sicherheit
+
+#### dotenv zur Exklusion von Schlüssel
+    npm install dotenv
 
 ### Optional    
 #### change restart mit nodemon
