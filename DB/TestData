@@ -1,0 +1,49 @@
+### Members
+
+{
+    "firstName": "Silvia",
+    "lastName": "Musterfrau",
+    "dateOfBirth": "1990-05-15",
+    "address": "Musterstraße 1",
+    "email": "silvia.musterfrau@example.com",
+    "phone": "+43234567890",
+    "postal_code": "1010",
+    "nation": "Österreich",
+    "city": "Wien"
+},
+
+{
+    "firstName": "Max",
+    "lastName": "Mustermann",
+    "dateOfBirth": "1990-05-15",
+    "address": "Musterstraße 1",
+    "email": "max.mustermann@example.com",
+    "phone": "+43123456789",
+    "postal_code": "1010",
+    "nation": "Grönland",
+    "city": "Wien"
+},
+
+{
+    "firstName": "John",
+    "lastName": "Doe",
+    "dateOfBirth": "1990-05-15",
+    "address": "Doetraße 1",
+    "email": "john.doe@example.com",
+    "phone": "+43345678912",
+    "postal_code": "1010",
+    "nation": "Dänemark",
+    "city": "Wien"
+},
+
+{
+    "firstName": "Jane",
+    "lastName": "Doe",
+    "dateOfBirth": "1990-05-15",
+    "address": "Doetraße 1",
+    "email": "jane.doe@example.com",
+    "phone": "+43567891234",
+    "postal_code": "1010",
+    "nation": "Ägypten",
+    "city": "Wien"
+}
