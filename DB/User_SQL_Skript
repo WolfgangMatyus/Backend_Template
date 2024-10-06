@@ -115,7 +115,7 @@ CREATE TABLE user_roles (
 -- Rollen einfügen
 INSERT INTO roles (id, role_name, parent_id) VALUES (uuid_generate_v4(), 'user', NULL);
 INSERT INTO roles (id, role_name, parent_id) VALUES (uuid_generate_v4(), 'trainer', (SELECT id FROM roles WHERE role_name='user'));
-INSERT INTO roles (id, role_name, parent_id) VALUES (uuid_generate_v4(), 'organ', (SELECT id FROM roles WHERE role_name='user'));
+INSERT INTO roles (id, role_name, parent_id) VALUES (uuid_generate_v4(), 'organ', (SELECT id FROM roles WHERE role_name='trainer'));
 INSERT INTO roles (id, role_name, parent_id) VALUES (uuid_generate_v4(), 'admin', NULL);
 
 

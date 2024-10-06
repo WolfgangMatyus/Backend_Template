@@ -1,10 +1,11 @@
 const bcrypt = require('bcryptjs');
 const User = require('../models/user'); // Importiere das User-Modell
 const Role = require('../models/role'); // Importiere das Role-Modell
+const UserRole = require('../models/userRole');
 
-// Benutzer anlegen (Create)
+// Benutzer anlegen (Create) und Rolle zuweisen
 const createUser = async (req, res) => {
-    const { name, email, password, memberId, role } = req.body; // memberId und role aus dem Body extrahieren
+    const { name, email, password, memberId } = req.body; // memberId aus dem Body extrahieren
 
     try {
         // Überprüfen, ob der Benutzer bereits existiert
@@ -24,19 +25,20 @@ const createUser = async (req, res) => {
             member_id: memberId // memberId hier setzen
         });
 
-        // Rolle zuweisen, wenn angegeben
-        if (role) {
-            const roleRecord = await Role.findOne({ where: { role_name: role } });
-            if (roleRecord) {
-                await user.addRole(roleRecord); // Angenommen, du hast eine viele-zu-viele-Beziehung
-            }
+        // Rolle finden (z.B. 'user' als Standardrolle)
+        const role = await Role.findOne({ where: { role_name: 'user' } });
+        if (!role) {
+            return res.status(400).json({ message: 'Rolle nicht gefunden' });
         }
+
+        // Verknüpfe den Benutzer mit der Rolle
+        await UserRole.create({ user_id: user.id, role_id: role.id });
 
         res.status(201).json({ 
             id: user.id, 
-            name: user.name, 
             email: user.email,
-            memberId: user.member_id // memberId im Response hinzufügen
+            memberId: user.member_id, // memberId im Response hinzufügen
+            role: role.role_name // Rolle im Response anzeigen
         });
     } catch (error) {
         console.error(error);

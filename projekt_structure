@@ -14,21 +14,27 @@
             +userController.js
         -middlewares
             +authMiddleware.js
-            +validationMiddleware.js
+            +authoriseRolesMiddleware.js
+            +validateUserInputMiddleware.js
+            +validateMemberMiddleware.js
         -models
             +member.js
             +user.js
+            +roles.js
+            +userRoles.js
         -routes
             +authRoutes.js
             +contributionRoutes.js
             +grantRoutes.js
             +membersRoutes.js
             +newsRoutes.js
+            +roleRoutes.js
             +userRoutes.js
         -security
             +auth.js
             +jwt.js
             +permission.js
     -test
+.env
 package.json
 server.js

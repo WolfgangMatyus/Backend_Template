@@ -4,6 +4,10 @@ const membersRoute = require('../Backend_Template/project-root/src/routes/member
 const authRoutes = require('../Backend_Template/project-root/src/routes/authRoutes');
 const userRoutes = require('../Backend_Template/project-root/src/routes/userRoutes'); // Neue Route importieren
 const roleRoutes = require('../Backend_Template/project-root/src/routes/roleRoutes'); // Importiere die neue Rollen-Route
+
+// Dotenv zur Verwendung von Umgebungsvariablen .env importieren
+require('dotenv').config();
+
 const app = express();
 
 app.use(bodyParser.json());

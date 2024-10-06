@@ -47,3 +47,23 @@
     "nation": "Ägypten",
     "city": "Wien"
 }
+
+### Users
+
+{
+    "member_id": "aus All Members Ablesen für den gewünschten Member",
+    "email": "eva.musterfrau@example.com",
+    "password_hash": "$2a$10$GPLdCCDpCHqt5Q0pVnvnXuFL08gWwEjq3kxukenMl39HMEKZu9jxy"
+}
+##### zweiter User auf dem gleichen Member:
+{
+    "memberId": "aus All Members Ablesen für den gewünschten Member",
+    "email": "mamavoneva.musterfrau@example.com",
+    "password": "123&PW_test"
+}
+
+{
+    "memberId": "aus All Members Ablesen für den gewünschten Member",
+    "email": "max.mustermann@example.com",
+    "password": "123&PW_test"
+}

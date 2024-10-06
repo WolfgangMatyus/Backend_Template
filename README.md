@@ -24,6 +24,11 @@ postgreSQL
 #### PostgreSQL-Treiber für DB-Kommunikation
     npm install pg pg-hstore
 
+### Sicherheit
+
+#### dotenv zur Exklusion von Schlüssel
+    npm install dotenv
+
 ### Optional    
 #### change restart mit nodemon
     npm install -g nodemon
