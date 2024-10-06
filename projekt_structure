@@ -1,0 +1,12 @@
+-DB
+    +SLQ-Skript
+-node_modules
+-projetct-root
+    -src
+        -config
+        -controllers
+        -middlewares
+        -routes
+    -test
+package.json
+server.js
