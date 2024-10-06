@@ -1,8 +1,8 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const membersRoute = require('./src/routes/members');
-const authRoutes = require('./src/routes/authRoutes');
-const userRoutes = require('./src/routes/userRoutes'); // Neue Route importieren
+const membersRoute = require('../Backend_Template/project-root/src/routes/membersRoutes');
+const authRoutes = require('../Backend_Template/project-root/src/routes/authRoutes');
+const userRoutes = require('../Backend_Template/project-root/src/routes/userRoutes'); // Neue Route importieren
 const app = express();
 
 app.use(bodyParser.json());
