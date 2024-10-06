@@ -6,3 +6,5 @@ Es wurde eigens ein Trigger Angefertigt welcher bei Statusänderung von aktive a
 
 Es ist eine DELETE Route vorhanden diese löschen unwiederruflich kann aber nur von speziellen Userrollen vorgenommen werden.
 
+
+#### User Memeber Role Logik
