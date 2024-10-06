@@ -4,10 +4,31 @@
 -projetct-root
     -src
         -config
+            +database.js
         -controllers
+            +authController.js
+            +contributionsController.js
+            +grantController.js
+            +memberController.js
+            +newsController.js
+            +userController.js
         -middlewares
+            +authMiddleware.js
+            +validationMiddleware.js
+        -models
+            +member.js
+            +user.js
         -routes
+            +authRoutes.js
+            +contributionRoutes.js
+            +grantRoutes.js
+            +membersRoutes.js
+            +newsRoutes.js
+            +userRoutes.js
         -security
+            +auth.js
+            +jwt.js
+            +permission.js
     -test
 package.json
 server.js

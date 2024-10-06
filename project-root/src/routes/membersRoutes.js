@@ -6,7 +6,7 @@ const {
   updateMember,
   deleteMember 
 } = require('../controllers/membersController');
-const { validateMemberInput } = require('../middlewares/validationMiddleware');
+const { validateMemberInput } = require('../middlewares/validatMemberInputMiddleware');
 const router = express.Router();
 
 // POST /api/v1/members - Mitglieder Registrierung

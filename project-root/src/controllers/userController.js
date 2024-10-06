@@ -1,18 +1,34 @@
 const bcrypt = require('bcryptjs');
-const User = require('../models/User'); // Importiere das User-Modell
+const User = require('../models/user'); // Importiere das User-Modell
 
 // Benutzer anlegen (Create)
 const createUser = async (req, res) => {
-    const { name, email, password } = req.body;
+    const { name, email, password, memberId } = req.body; // memberId aus dem Body extrahieren
 
     try {
+        // Überprüfen, ob der Benutzer bereits existiert
+        const existingUser = await User.findOne({ where: { email } });
+        if (existingUser) {
+            return res.status(400).json({ message: 'User existiert bereits' });
+        }
+
         // Hash das Passwort
         const password_hash = await bcrypt.hash(password, 10);
 
         // Erstelle den Benutzer
-        const user = await User.create({ name, email, password_hash });
+        const user = await User.create({ 
+            name, 
+            email, 
+            password_hash,
+            member_id: memberId // memberId hier setzen
+        });
 
-        res.status(201).json({ id: user.id, name: user.name, email: user.email });
+        res.status(201).json({ 
+            id: user.id, 
+            name: user.name, 
+            email: user.email,
+            memberId: user.member_id // memberId im Response hinzufügen
+        });
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Server error' });
@@ -33,7 +49,7 @@ const getAllUsers = async (req, res) => {
 // Benutzer aktualisieren (Update)
 const updateUser = async (req, res) => {
     const { id } = req.params;
-    const { name, email, password } = req.body;
+    const { memberId, email, password } = req.body; // memberId aus dem Body extrahieren
 
     try {
         const user = await User.findByPk(id);
@@ -46,17 +62,20 @@ const updateUser = async (req, res) => {
             user.password_hash = await bcrypt.hash(password, 10);
         }
 
-        user.name = name || user.name;
+        // Aktualisiere die Benutzerinformationen
         user.email = email || user.email;
+        user.member_id = memberId || user.member_id; // memberId aktualisieren, wenn bereitgestellt
 
-        await user.save();
+        // Speichere die Änderungen
+        const updatedUser = await user.save(); // Speichern und das aktualisierte User-Objekt erhalten
 
-        res.json({ message: 'User updated', user });
+        res.json({ message: 'User updated', user: updatedUser });
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Server error' });
     }
 };
+
 
 // Benutzer löschen (Delete)
 const deleteUser = async (req, res) => {
