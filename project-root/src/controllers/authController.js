@@ -1,8 +1,6 @@
-// src/controllers/authController.js
-
 const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
-const User = require('../models/User'); // Importiere dein User-Modell hier
+const { generateToken } = require('../security/jwt'); // Importiere die Token-Generierungsfunktion
+const User = require('../models/user'); // Importiere dein User-Modell hier
 
 // Login Funktion
 const login = async (req, res) => {
@@ -25,9 +23,7 @@ const login = async (req, res) => {
         }
 
         // Generiere JWT Token
-        const token = jwt.sign({ id: user.id, email: user.email }, process.env.JWT_SECRET, {
-            expiresIn: '1h', // Token Ablaufzeit
-        });
+        const token = generateToken(user); // Verwende die Funktion aus jwt.js
 
         res.json({ token }); // Sende den Token als Antwort
     } catch (error) {
