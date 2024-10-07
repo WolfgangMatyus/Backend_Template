@@ -2,6 +2,10 @@
     +SLQ-Skript
 -node_modules
 -projetct-root
+    -uploads
+        -blog_uploads
+        -contributions
+        -profile_pictures
     -src
         -config
             +database.js

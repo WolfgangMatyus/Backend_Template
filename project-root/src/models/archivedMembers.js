@@ -1,68 +1,53 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/database');
+const Member = require('./member');  // Importiere das Member-Modell für die Referenz
 
-const Member = sequelize.define('Member', {
+const ArchivedMember = sequelize.define('ArchivedMember', {
     id: {
         type: DataTypes.UUID,
         defaultValue: DataTypes.UUIDV4,
         primaryKey: true,
     },
+    original_member_id: {
+        type: DataTypes.UUID,
+        references: {
+            model: Member,
+            key: 'id',
+        },
+    },
     first_name: {
         type: DataTypes.STRING,
-        allowNull: false,
     },
     last_name: {
         type: DataTypes.STRING,
-        allowNull: false,
     },
     date_of_birth: {
         type: DataTypes.DATEONLY,
-        allowNull: false,
     },
     address: {
         type: DataTypes.STRING,
-        allowNull: false,
     },
     postal_code: {
         type: DataTypes.STRING,
-        allowNull: false,
     },
     city: {
         type: DataTypes.STRING,
-        allowNull: false,
     },
     email: {
         type: DataTypes.STRING,
-        allowNull: false,
-        unique: true,
     },
     phone: {
         type: DataTypes.STRING,
-        allowNull: true,
     },
     nationality: {
         type: DataTypes.STRING,
-        allowNull: true,
     },
     profile_photo: {
         type: DataTypes.TEXT,
-        allowNull: true,
-    },
-    status: {
-        type: DataTypes.STRING,
-        defaultValue: 'active',
-    },
-    created_at: {
-        type: DataTypes.DATE,
-        defaultValue: DataTypes.NOW,
-    },
-    updated_at: {
-        type: DataTypes.DATE,
-        defaultValue: DataTypes.NOW,
     },
 }, {
-    tableName: 'members', // Der Name der Tabelle in der Datenbank
-    timestamps: false,    // Wenn du die Timestamps nicht automatisch verwalten möchtest
+    timestamps: true,  // created_at und archived_at werden automatisch verwaltet
+    createdAt: 'archived_at',  // Ändert den Namen der Spalte createdAt zu archived_at
 });
 
-module.exports = Member;
+module.exports = ArchivedMember;
