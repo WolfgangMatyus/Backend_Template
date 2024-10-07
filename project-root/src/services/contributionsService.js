@@ -2,22 +2,22 @@ const Contribution = require('../models/contributions');
 
 // Beitrag erstellen
 const createContribution = async (data) => {
-    return await MemberContribution.create(data);
+    return await Contribution.create(data);
 };
 
 // Alle Beiträge abrufen
 const getAllContributions = async () => {
-    return await MemberContribution.findAll();
+    return await Contribution.findAll();
 };
 
 // Beitrag nach ID abrufen
 const getContributionById = async (id) => {
-    return await MemberContribution.findByPk(id);
+    return await Contribution.findByPk(id);
 };
 
 // Beitrag aktualisieren
 const updateContribution = async (id, data) => {
-    const contribution = await MemberContribution.findByPk(id);
+    const contribution = await Contribution.findByPk(id);
     if (!contribution) {
         return null;
     }
@@ -26,7 +26,7 @@ const updateContribution = async (id, data) => {
 
 // Beitrag löschen
 const deleteContribution = async (id) => {
-    const contribution = await MemberContribution.findByPk(id);
+    const contribution = await Contribution.findByPk(id);
     if (!contribution) {
         return null;
     }

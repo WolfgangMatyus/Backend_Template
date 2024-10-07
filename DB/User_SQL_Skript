@@ -36,18 +36,8 @@ CREATE TABLE archived_members (
     archived_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Mitgliederbeiträge Tabelle mit UUID
-CREATE TABLE member_contributions (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),    -- UUID als Primärschlüssel
-    member_id UUID REFERENCES members(id),             -- UUID Referenz zu Mitgliedern
-    amount DECIMAL(10, 2) NOT NULL,
-    due_date DATE NOT NULL,
-    status VARCHAR(20) DEFAULT 'pending', -- 'pending', 'paid', 'inactive'
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
--- Mitgliederbeiträge Tabelle mit UUID
-CREATE TABLE member_contributions (
+-- Beiträge Tabelle mit UUID
+CREATE TABLE contributions (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),     -- UUID als Primärschlüssel
     member_id UUID REFERENCES members(id),              -- UUID Referenz zu Mitgliedern
     semester VARCHAR(20) NOT NULL,                      -- Semester (z.B. "Sommersemester 2024")
@@ -60,7 +50,7 @@ CREATE TABLE member_contributions (
 -- Beitragsposten (Einzelpositionen innerhalb einer Beitragsvorschreibung)
 CREATE TABLE contribution_items (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),     -- UUID als Primärschlüssel
-    contribution_id UUID REFERENCES member_contributions(id) ON DELETE CASCADE,  -- Beitrag (Vorschreibung) Referenz
+    contribution_id UUID REFERENCES contributions(id) ON DELETE CASCADE,  -- Beitrag (Vorschreibung) Referenz
     description VARCHAR(255) NOT NULL,                  -- Bezeichnung der Posten (z.B. Mitgliedsbeitrag, Kursgebühr)
     quantity INT NOT NULL DEFAULT 1,                    -- Anzahl der Positionen
     amount DECIMAL(10, 2) NOT NULL                      -- Betrag für die jeweilige Position

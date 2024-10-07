@@ -1,9 +1,9 @@
-const contributionService = require('../services/contributionService');
+const contributionsService = require('../services/contributionsService');
 
 // Beitrag erstellen
 const createContribution = async (req, res) => {
     try {
-        const contribution = await contributionService.createContribution(req.body);
+        const contribution = await contributionsService.createContribution(req.body);
         res.status(201).json(contribution);
     } catch (error) {
         res.status(500).json({ message: 'Fehler beim Erstellen des Beitrags.', error });
@@ -13,7 +13,7 @@ const createContribution = async (req, res) => {
 // Alle Beiträge abrufen
 const getAllContributions = async (req, res) => {
     try {
-        const contributions = await contributionService.getAllContributions();
+        const contributions = await contributionsService.getAllContributions();
         res.status(200).json(contributions);
     } catch (error) {
         res.status(500).json({ message: 'Fehler beim Abrufen der Beiträge.', error });
@@ -23,7 +23,7 @@ const getAllContributions = async (req, res) => {
 // Beitrag nach ID abrufen
 const getContributionById = async (req, res) => {
     try {
-        const contribution = await contributionService.getContributionById(req.params.id);
+        const contribution = await contributionsService.getContributionById(req.params.id);
         if (!contribution) {
             return res.status(404).json({ message: 'Beitrag nicht gefunden.' });
         }
@@ -36,7 +36,7 @@ const getContributionById = async (req, res) => {
 // Beitrag aktualisieren
 const updateContribution = async (req, res) => {
     try {
-        const contribution = await contributionService.updateContribution(req.params.id, req.body);
+        const contribution = await contributionsService.updateContribution(req.params.id, req.body);
         if (!contribution) {
             return res.status(404).json({ message: 'Beitrag nicht gefunden.' });
         }
@@ -49,7 +49,7 @@ const updateContribution = async (req, res) => {
 // Beitrag löschen
 const deleteContribution = async (req, res) => {
     try {
-        const result = await contributionService.deleteContribution(req.params.id);
+        const result = await contributionsService.deleteContribution(req.params.id);
         if (!result) {
             return res.status(404).json({ message: 'Beitrag nicht gefunden.' });
         }

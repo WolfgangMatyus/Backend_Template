@@ -1,39 +1,30 @@
-const { DataTypes } = require('sequelize');
-const sequelize = require('../config/database');
-const Member = require('../models/members');
+const express = require('express');
+const membersRoute = require('../Backend_Template/project-root/src/routes/membersRoutes');
+const authRoutes = require('../Backend_Template/project-root/src/routes/authRoutes');
+const userRoutes = require('../Backend_Template/project-root/src/routes/userRoutes');
+const roleRoutes = require('../Backend_Template/project-root/src/routes/roleRoutes');
+const contributionsRoutes = require('../Backend_Template/project-root/src/routes/contributionsRoutes');
+const contributionItemsRoutes = require('../Backend_Template/project-root/src/routes/contributionItemsRoutes');
 
-const Contributions = sequelize.define('Contribution', {
-    id: {
-        type: DataTypes.UUID,
-        defaultValue: DataTypes.UUIDV4,
-        primaryKey: true,
-    },
-    member_id: {
-        type: DataTypes.UUID,
-        references: {
-            model: Member,
-            key: 'id',
-        },
-        allowNull: false,
-    },
-    semester: {
-        type: DataTypes.STRING,
-        allowNull: false,
-    },
-    total_amount: {
-        type: DataTypes.DECIMAL(10, 2),
-        allowNull: false,
-    },
-    due_date: {
-        type: DataTypes.DATEONLY,
-        allowNull: false,
-    },
-    status: {
-        type: DataTypes.STRING,
-        defaultValue: 'pending',
-    },
-}, {
-    timestamps: true,  // created_at und updated_at werden automatisch verwaltet
+// Dotenv zur Verwendung von Umgebungsvariablen .env importieren
+require('dotenv').config();
+
+const app = express();
+
+app.use(express.json());
+
+// Routen hinzufügen
+app.use('/api/v1/members', membersRoute);
+app.use('/api/v1/auth', authRoutes);
+app.use('/api/v1/users', userRoutes);
+app.use('/api/v1/roles', roleRoutes);
+app.use('/api/v1/contributions', contributionsRoutes);
+app.use('/api/v1/contributionItems', contributionItemsRoutes);
+
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
 });
 
-module.exports = Contributions;
+// Exportiere die App für Tests
+module.exports = app;
