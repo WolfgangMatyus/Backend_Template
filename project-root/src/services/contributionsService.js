@@ -50,7 +50,8 @@ const getClubInfo = async () => {
 // Funktion zur Generierung des PDFs
 const generateContributionPDF = async (contributionId) => {
     const contribution = await getContributionById(contributionId);
-
+    console.log('Contribution:', contribution);
+    
     if (!contribution) {
         throw new Error('Beitrag nicht gefunden.');
     }
@@ -95,10 +96,14 @@ const generateContributionPDF = async (contributionId) => {
 
     // Beitragspositionen
     pdfDoc.text(`Positionen:`);
-    contribution.items.forEach(item => {
-        pdfDoc.text(`- ${item.description}: ${item.quantity} x ${item.amount} €`);
-    });
-
+    // Überprüfen, ob contribution.items existiert und ob es ein Array ist
+    if (Array.isArray(contribution.items) && contribution.items.length > 0) {
+        contribution.items.forEach(item => {
+            pdfDoc.text(`- ${item.description}: ${item.quantity} x ${item.amount} €`);
+        });
+    } else {
+        pdfDoc.text('Keine Positionen verfügbar.');
+    }
     pdfDoc.text(`Gesamtbeitrag: ${contribution.totalAmount} €`);
     pdfDoc.moveDown();
     pdfDoc.text(`Wir bitten um Überweisung auf das unten stehende Konto, binnen 14 Tagen nach Erhalt der Rechnung.`);

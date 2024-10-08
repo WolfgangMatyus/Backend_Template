@@ -1,5 +1,6 @@
 const { Sequelize, DataTypes } = require('sequelize');
 const sequelize = require('../config/database'); // Importiere die Datenbankkonfiguration
+const ContributionItem = require('./contributionItems');
 
 // Definiere das Modell für Contributions
 const Contribution = sequelize.define('Contribution', {
@@ -36,13 +37,9 @@ const Contribution = sequelize.define('Contribution', {
             isIn: [['pending', 'paid', 'inactive']], // Erlaubte Statuswerte
         },
     },
-    created_at: {
-        type: DataTypes.DATE,
-        defaultValue: Sequelize.NOW,
-    },
 }, {
     tableName: 'contributions', // Der Name der Tabelle in der DB
-    timestamps: false, // Wenn du keine timestamps (createdAt, updatedAt) benötigst
+    timestamps: true, 
 });
 
 // Exportiere das Modell
