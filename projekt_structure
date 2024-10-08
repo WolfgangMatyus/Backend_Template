@@ -2,16 +2,13 @@
     +SLQ-Skript
 -node_modules
 -projetct-root
-    -uploads
-        -blog_uploads
-        -contributions
-        -profile_pictures
     -src
         -config
             +database.js
         -controllers
             +authController.js
             +contributionsController.js
+            +contributionItemsController.js
             +grantController.js
             +memberController.js
             +newsController.js
@@ -22,23 +19,35 @@
             +validateUserInputMiddleware.js
             +validateMemberMiddleware.js
         -models
-            +member.js
-            +user.js
+            +archivedMembers.js
+            +associations.js
+            +clubInfo.js
+            +contributionItems.js
+            +contributions.js
+            +members.js
             +roles.js
+            +user.js
             +userRoles.js
         -routes
             +authRoutes.js
-            +contributionRoutes.js
+            +contributionItemsRoutes.js
+            +contributionsRoutes.js
             +grantRoutes.js
             +membersRoutes.js
             +newsRoutes.js
             +roleRoutes.js
             +userRoutes.js
         -security
-            +auth.js
             +jwt.js
             +permission.js
+        -services
+            +contributionItemsService.js
+            +contributionsService.js
     -test
+    -uploads
+        -blog_uploads
+        -contributions
+        -profile_pictures
 .env
 package.json
 server.js

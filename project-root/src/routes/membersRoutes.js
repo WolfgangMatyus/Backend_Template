@@ -1,12 +1,13 @@
 const express = require('express');
-const { 
-  registerMember, 
-  getAllMembers, 
-  getMemberById, 
+const {
+  registerMember,
+  getAllMembers,
+  getMemberById,
   updateMember,
-  deleteMember 
-} = require('../controllers/membersController');
-const { validateMemberInput } = require('../middlewares/validatMemberInputMiddleware');
+  deleteMember
+} = require('../controllers/membersController'); // Achte darauf, den richtigen Dateinamen zu verwenden
+const { validateMemberInput } = require('../middlewares/validateMemberInputMiddleware'); // Hier auch sicherstellen
+
 const router = express.Router();
 
 // POST /api/v1/members - Mitglieder Registrierung

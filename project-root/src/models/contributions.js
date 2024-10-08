@@ -1,30 +1,49 @@
-const express = require('express');
-const membersRoute = require('../Backend_Template/project-root/src/routes/membersRoutes');
-const authRoutes = require('../Backend_Template/project-root/src/routes/authRoutes');
-const userRoutes = require('../Backend_Template/project-root/src/routes/userRoutes');
-const roleRoutes = require('../Backend_Template/project-root/src/routes/roleRoutes');
-const contributionsRoutes = require('../Backend_Template/project-root/src/routes/contributionsRoutes');
-const contributionItemsRoutes = require('../Backend_Template/project-root/src/routes/contributionItemsRoutes');
+const { Sequelize, DataTypes } = require('sequelize');
+const sequelize = require('../config/database'); // Importiere die Datenbankkonfiguration
 
-// Dotenv zur Verwendung von Umgebungsvariablen .env importieren
-require('dotenv').config();
-
-const app = express();
-
-app.use(express.json());
-
-// Routen hinzufügen
-app.use('/api/v1/members', membersRoute);
-app.use('/api/v1/auth', authRoutes);
-app.use('/api/v1/users', userRoutes);
-app.use('/api/v1/roles', roleRoutes);
-app.use('/api/v1/contributions', contributionsRoutes);
-app.use('/api/v1/contributionItems', contributionItemsRoutes);
-
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
+// Definiere das Modell für Contributions
+const Contribution = sequelize.define('Contribution', {
+    id: {
+        type: DataTypes.UUID,
+        defaultValue: DataTypes.UUIDV4, // Generiere eine UUID
+        primaryKey: true,
+    },
+    member_id: {
+        type: DataTypes.UUID,
+        allowNull: false,
+        references: {
+            model: 'members', // Der Name der referenzierten Tabelle
+            key: 'id',
+        },
+    },
+    semester: {
+        type: DataTypes.STRING,
+        allowNull: false,
+    },
+    total_amount: {
+        type: DataTypes.DECIMAL(10, 2),
+        allowNull: false,
+    },
+    due_date: {
+        type: DataTypes.DATE,
+        allowNull: false,
+    },
+    status: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        defaultValue: 'pending',
+        validate: {
+            isIn: [['pending', 'paid', 'inactive']], // Erlaubte Statuswerte
+        },
+    },
+    created_at: {
+        type: DataTypes.DATE,
+        defaultValue: Sequelize.NOW,
+    },
+}, {
+    tableName: 'contributions', // Der Name der Tabelle in der DB
+    timestamps: false, // Wenn du keine timestamps (createdAt, updatedAt) benötigst
 });
 
-// Exportiere die App für Tests
-module.exports = app;
+// Exportiere das Modell
+module.exports = Contribution;

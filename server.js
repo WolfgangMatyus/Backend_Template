@@ -1,11 +1,10 @@
 const express = require('express');
-const bodyParser = require('body-parser');
-const membersRoute = require('../Backend_Template/project-root/src/routes/membersRoutes');
-const authRoutes = require('../Backend_Template/project-root/src/routes/authRoutes');
-const userRoutes = require('../Backend_Template/project-root/src/routes/userRoutes');
-const roleRoutes = require('../Backend_Template/project-root/src/routes/roleRoutes');
-const contributionsRoutes = require('../Backend_Template/project-root/src/routes/contributionsRoutes');
-const contributionItemsRoutes = require('../Backend_Template/project-root/src/routes/contributionItemsRoutes');
+const membersRoute = require('./project-root/src/routes/membersRoutes');
+const authRoutes = require('./project-root/src/routes/authRoutes');
+const userRoutes = require('./project-root/src/routes/userRoutes');
+const roleRoutes = require('./project-root/src/routes/roleRoutes');
+const contributionsRoutes = require('./project-root/src/routes/contributionsRoutes');
+const contributionItemsRoutes = require('./project-root/src/routes/contributionItemsRoutes');
 
 // Dotenv zur Verwendung von Umgebungsvariablen .env importieren
 require('dotenv').config();

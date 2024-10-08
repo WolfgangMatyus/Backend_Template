@@ -1,4 +1,4 @@
-const contributionItemService = require('../services/contributionItemService');
+const contributionItemService = require('../services/contributionItemsService');
 
 // Beitragsposten erstellen
 const createContributionItem = async (req, res) => {
