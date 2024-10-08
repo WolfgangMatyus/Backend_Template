@@ -17,4 +17,7 @@ router.put('/:id', contributionsController.updateContribution);
 // Beitrag löschen
 router.delete('/:id', contributionsController.deleteContribution);
 
+// PDF für einen Beitrag generieren
+router.post('/:id/generatePdf', contributionsController.generateContributionPDF);
+
 module.exports = router;

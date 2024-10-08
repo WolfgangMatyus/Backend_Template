@@ -20,7 +20,8 @@ postgreSQL
     npm install sequelize
 #### PostgreSQL-Treiber für DB-Kommunikation
     npm install pg pg-hstore
-#### PDFkit zur PDF-Dokument Erstellung 
+#### PDFkit zur PDF-Dokument Erstellung
+    npm install puppeteer
     npm install pdfkit
 #### jest und Suptertest
     npm install --save-dev jest supertest

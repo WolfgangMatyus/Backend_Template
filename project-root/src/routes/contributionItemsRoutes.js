@@ -3,18 +3,18 @@ const contributionItemController = require('../controllers/contributionItemsCont
 const router = express.Router();
 
 // Beitragsposten erstellen
-router.post('/contribution-items', contributionItemController.createContributionItem);
+router.post('/', contributionItemController.createContributionItem);
 
 // Alle Beitragsposten abrufen
-router.get('/contribution-items', contributionItemController.getAllContributionItems);
+router.get('/', contributionItemController.getAllContributionItems);
 
 // Beitragsposten nach ID abrufen
-router.get('/contribution-items/:id', contributionItemController.getContributionItemById);
+router.get('/:id', contributionItemController.getContributionItemById);
 
 // Beitragsposten aktualisieren
-router.put('/contribution-items/:id', contributionItemController.updateContributionItem);
+router.put('/:id', contributionItemController.updateContributionItem);
 
 // Beitragsposten löschen
-router.delete('/contribution-items/:id', contributionItemController.deleteContributionItem);
+router.delete('/:id', contributionItemController.deleteContributionItem);
 
 module.exports = router;

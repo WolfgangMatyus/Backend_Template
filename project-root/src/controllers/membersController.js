@@ -1,4 +1,4 @@
-const pool = require('../config/db_pg');
+const sequelize = require('../config/database');
 
 // Registrierung eines neuen Mitglieds
 const registerMember = async (req, res) => {
@@ -11,7 +11,7 @@ const registerMember = async (req, res) => {
     }
 
     try {
-        const result = await pool.query(
+        const result = await sequelize.query(
             'INSERT INTO members (first_name, last_name, date_of_birth, address, email, phone, postal_code, nationality, city) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *',
             [firstName, lastName, dateOfBirth, address, email, phone, postal_code, nation, city] // Füge city hinzu
         );
@@ -29,7 +29,7 @@ const registerMember = async (req, res) => {
 // Abrufen aller Mitglieder
 const getAllMembers = async (req, res) => {
     try {
-        const result = await pool.query('SELECT * FROM members');
+        const result = await sequelize.query('SELECT * FROM members');
         res.status(200).json(result.rows);
     } catch (error) {
         console.error(error);
@@ -42,7 +42,7 @@ const getMemberById = async (req, res) => {
     const { id } = req.params;
 
     try {
-        const result = await pool.query('SELECT * FROM members WHERE id = $1', [id]);
+        const result = await sequelize.query('SELECT * FROM members WHERE id = $1', [id]);
         if (result.rows.length === 0) {
             return res.status(404).json({ message: 'Mitglied nicht gefunden' });
         }
@@ -64,7 +64,7 @@ const updateMember = async (req, res) => {
     }
 
     try {
-        const result = await pool.query(
+        const result = await sequelize.query(
             'UPDATE members SET first_name = $1, last_name = $2, date_of_birth = $3, address = $4, email = $5, phone = $6, postal_code = $7, nationality= $8, city = $9 WHERE id = $10 RETURNING *',
             [firstName, lastName, dateOfBirth, address, email, phone, postal_code, nation, city, id]
         );
@@ -88,7 +88,7 @@ const deleteMember = async (req, res) => {
   const { id } = req.params;
 
   try {
-      const result = await pool.query('DELETE FROM members WHERE id = $1 RETURNING *', [id]);
+      const result = await sequelize.query('DELETE FROM members WHERE id = $1 RETURNING *', [id]);
 
       if (result.rowCount === 0) {
           return res.status(404).json({ message: 'Mitglied nicht gefunden' });

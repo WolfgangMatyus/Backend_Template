@@ -31,7 +31,8 @@ const ContributionItem = sequelize.define('contributionItems', {
         allowNull: false,
     },
 }, {
-    timestamps: true,
+    tableName: 'contribution_items',
+    timestamps: false,
 });
 
 module.exports = ContributionItem;
