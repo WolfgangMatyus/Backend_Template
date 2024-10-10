@@ -1,52 +1,117 @@
-### Members
+// addresses für Postman
+
+    //Vereinsaddresse
+{
+    "street": "Calvigasse",
+    "house_number": "4",
+    "stair": "1",
+    "door_number": "26",
+    "postal_code": "1230",
+    "city": "Wien",
+    "country": "Österreich"
+}
 
 {
-    "firstName": "Silvia",
-    "lastName": "Musterfrau",
-    "dateOfBirth": "1990-05-15",
-    "address": "Musterstraße 1",
-    "email": "silvia.musterfrau@example.com",
-    "phone": "+43234567890",
-    "postal_code": "1010",
-    "nation": "Österreich",
-    "city": "Wien"
-},
+    "street": "Hauptstraße",
+    "house_number": "12",
+    "stair": "1",
+    "door_number": "2",
+    "postal_code": "12345",
+    "city": "Wien",
+    "country": "Österreich"
+}
+
+
+// Members für Postman
 
 {
     "firstName": "Max",
     "lastName": "Mustermann",
-    "dateOfBirth": "1990-05-15",
-    "address": "Musterstraße 1",
+    "dateOfBirth": "1990-01-01",
+    "gender": "männlich",
+    "memberSince": "2020-01-01",
+    "guardianName": "Peter Mustermann",
+    "guardianContact": "peter@example.com",
+    "address": {
+        "street": "Calvigasse",
+        "house_number": "4",
+        "stair": "1",
+        "door_number": "26",
+        "postal_code": "1230",
+        "city": "Wien",
+        "country": "Österreich"
+    },
     "email": "max.mustermann@example.com",
-    "phone": "+43123456789",
-    "postal_code": "1010",
-    "nation": "Grönland",
-    "city": "Wien"
-},
+    "phone": "+43 676 1234567",
+    "nationality": "Österreichisch"
+}
+
+{
+    "firstName": "Eva",
+    "lastName": "Musterfrau",
+    "dateOfBirth": "1992-02-02",
+    "gender": "weiblich",
+    "memberSince": "2021-02-01",
+    "guardianName": "Anna Musterfrau",
+    "guardianContact": "anna@example.com",
+    "address": {
+        "street": "Beispielstraße",
+        "house_number": "10",
+        "stair": "2",
+        "door_number": "3",
+        "postal_code": "1010",
+        "city": "Wien",
+        "country": "Österreich"
+    },
+    "email": "eva.musterfrau@example.com",
+    "phone": "+43 676 7654321",
+    "nationality": "Österreichisch"
+}
 
 {
     "firstName": "John",
     "lastName": "Doe",
-    "dateOfBirth": "1990-05-15",
-    "address": "Doetraße 1",
+    "dateOfBirth": "1988-03-03",
+    "gender": "männlich",
+    "memberSince": "2019-03-01",
+    "guardianName": "Jane Doe",
+    "guardianContact": "jane@example.com",
+    "address": {
+        "street": "Hauptstraße",
+        "house_number": "15",
+        "stair": "1",
+        "door_number": "5",
+        "postal_code": "1200",
+        "city": "Wien",
+        "country": "Österreich"
+    },
     "email": "john.doe@example.com",
-    "phone": "+43345678912",
-    "postal_code": "1010",
-    "nation": "Dänemark",
-    "city": "Wien"
-},
+    "phone": "+43 676 1122334",
+    "nationality": "Österreichisch"
+}
 
 {
     "firstName": "Jane",
     "lastName": "Doe",
-    "dateOfBirth": "1990-05-15",
-    "address": "Doetraße 1",
+    "dateOfBirth": "1995-04-04",
+    "gender": "weiblich",
+    "memberSince": "2022-04-01",
+    "guardianName": "John Doe",
+    "guardianContact": "john@example.com",
+    "address": {
+        "street": "Musterweg",
+        "house_number": "8",
+        "stair": "3",
+        "door_number": "1",
+        "postal_code": "1300",
+        "city": "Wien",
+        "country": "Österreich"
+    },
     "email": "jane.doe@example.com",
-    "phone": "+43567891234",
-    "postal_code": "1010",
-    "nation": "Ägypten",
-    "city": "Wien"
+    "phone": "+43 676 9988776",
+    "nationality": "Österreichisch"
 }
+
 
 ### Users
 

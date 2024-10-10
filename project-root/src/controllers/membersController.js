@@ -1,39 +1,51 @@
-const pool = require('../config/db_pg');
+// membersController.js
+const Address = require('../models/addresses');
+const addressesService = require('../services/addressesService');
 
-// Registrierung eines neuen Mitglieds
+const {
+    findMemberById,
+    registerMemberService,
+    getAllMembersService,
+    getMemberByIdService,
+    updateMemberService,
+    deleteMemberService,
+} = require('../services/membersService');
+
 const registerMember = async (req, res) => {
-    // Stelle sicher, dass die Variablen korrekt benannt sind, um mit dem Request-Body übereinzustimmen
-    const { firstName, lastName, dateOfBirth, address, email, phone, postal_code, nation, city } = req.body;
+    const { first_name, last_name, date_of_birth, gender, email, phone, nationality, guardian_name, guardian_contact } = req.body;
+    const { street, house_number, stair, door_number, postal_code, city, country } = req.body;
 
-    // Validierung der erforderlichen Felder
-    if (!firstName || !lastName || !dateOfBirth || !address || !email || !phone || !postal_code || !nation || !city) {
-        return res.status(400).json({ message: 'Alle Felder sind erforderlich.' });
-    }
+    // Member-Daten
+    const memberData = { first_name, last_name, date_of_birth, gender, email, phone, nationality, guardian_name, guardian_contact };
+
+    // Address-Daten
+    const addressData = { street, house_number, stair, door_number, postal_code, city, country };
 
     try {
-        const result = await pool.query(
-            'INSERT INTO members (first_name, last_name, date_of_birth, address, email, phone, postal_code, nationality, city) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *',
-            [firstName, lastName, dateOfBirth, address, email, phone, postal_code, nation, city] // Füge city hinzu
-        );
-
-        res.status(201).json({
-            message: 'Mitglied erfolgreich registriert',
-            member: result.rows[0]
-        });
+        // Mitglied erstellen (und Adresse verknüpfen)
+        const newMember = await registerMemberService(memberData, addressData);
+        res.status(201).json(newMember);
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Fehler bei der Registrierung' });
+        console.error('Fehler beim Erstellen des Mitglieds:', error);
+        res.status(500).json({ message: 'Fehler beim Erstellen des Mitglieds' });
     }
 };
 
 // Abrufen aller Mitglieder
 const getAllMembers = async (req, res) => {
     try {
-        const result = await pool.query('SELECT * FROM members');
-        res.status(200).json(result.rows);
+        // Abrufen aller Mitglieder und der zugehörigen Adressen
+        const members = await getAllMembersService({
+            include: [{
+                model: Address,  // Hier wird die Address-Verknüpfung hinzugefügt
+                as: 'address',   // Alias für die Verknüpfung
+                attributes: ['street', 'house_number', 'stair', 'door_number', 'postal_code', 'city', 'country']  // Nur relevante Adressfelder abrufen
+            }]
+        });
+        res.status(200).json(members);
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Fehler beim Abrufen der Mitglieder' });
+        console.error('Fehler beim Abrufen der Mitglieder:', error);
+        res.status(500).json({ message: 'Fehler beim Abrufen der Mitglieder: ' + error.message });
     }
 };
 
@@ -42,66 +54,82 @@ const getMemberById = async (req, res) => {
     const { id } = req.params;
 
     try {
-        const result = await pool.query('SELECT * FROM members WHERE id = $1', [id]);
-        if (result.rows.length === 0) {
+        const member = await getMemberByIdService(id); // Hier den Service aufrufen
+        if (!member) {
             return res.status(404).json({ message: 'Mitglied nicht gefunden' });
         }
-        res.status(200).json(result.rows[0]);
+        res.status(200).json(member);
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Fehler beim Abrufen des Mitglieds' });
+        console.error('Fehler beim Abrufen des Mitglieds:', error);
+        res.status(500).json({ message: 'Fehler beim Abrufen des Mitglieds: ' + error.message });
     }
 };
 
-// Aktualisieren eines Mitgliedsprofils
 const updateMember = async (req, res) => {
     const { id } = req.params;
-    const { firstName, lastName, dateOfBirth, address, email, phone, postal_code, nation, city } = req.body;
+    const { first_name, last_name, date_of_birth, gender, member_since, guardian_name, guardian_contact, email, phone, nationality } = req.body;
+    const { street, house_number, stair, door_number, postal_code, city, country } = req.body;
 
-    // Validierung der erforderlichen Felder
-    if (!firstName || !lastName || !dateOfBirth || !address || !email || !phone || !postal_code || !nation || !city) {
-      return res.status(400).json({ message: 'Alle Felder sind erforderlich.' });
-    }
+    // Member-Daten
+    const memberData = { first_name, last_name, date_of_birth, gender, member_since, guardian_name, guardian_contact, email, phone, nationality };
+
+    // Address-Daten
+    const addressData = { street, house_number, stair, door_number, postal_code, city, country };
 
     try {
-        const result = await pool.query(
-            'UPDATE members SET first_name = $1, last_name = $2, date_of_birth = $3, address = $4, email = $5, phone = $6, postal_code = $7, nationality= $8, city = $9 WHERE id = $10 RETURNING *',
-            [firstName, lastName, dateOfBirth, address, email, phone, postal_code, nation, city, id]
-        );
+        // Schritt 1: Mitglied finden
+        const existingMember = await findMemberById(id);
+        if (!existingMember) {
+            return res.status(404).json({ message: 'Mitglied nicht gefunden' });
+        }
 
-        if (result.rows.length === 0) {
+        // Schritt 2: Adresse überprüfen und aktualisieren oder neue Adresse erstellen
+        let address = await addressesService.findAddressByDetails(addressData);
+        if (!address) {
+            address = await addressesService.createAddress(addressData);
+        }
+
+        // Schritt 3: Mitglied aktualisieren
+        const updatedMember = await updateMemberService(id, {
+            ...memberData,
+            address_id: address.id, // Verknüpfung mit aktualisierter oder neuer Adresse
+        });
+
+        res.status(200).json({
+            message: 'Mitglied erfolgreich aktualisiert',
+            member: updatedMember,
+        });
+    } catch (error) {
+        console.error('Fehler beim Aktualisieren des Mitglieds:', error);
+        res.status(500).json({ message: 'Fehler beim Aktualisieren des Mitglieds: ' + error.message });
+    }
+};
+
+
+// Löschen eines Mitglieds anhand der ID
+const deleteMember = async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        const deletedMember = await deleteMemberService(id);
+        if (!deletedMember) {
             return res.status(404).json({ message: 'Mitglied nicht gefunden' });
         }
 
         res.status(200).json({
-            message: 'Mitglied erfolgreich aktualisiert',
-            member: result.rows[0]
+            message: 'Mitglied erfolgreich gelöscht',
+            deletedMember,
         });
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Fehler beim Aktualisieren des Mitglieds' });
+        console.error('Fehler beim Löschen des Mitglieds:', error);
+        res.status(500).json({ message: 'Fehler beim Löschen des Mitglieds: ' + error.message });
     }
 };
 
-// Löschen eines Mitglieds anhand der ID
-const deleteMember = async (req, res) => {
-  const { id } = req.params;
-
-  try {
-      const result = await pool.query('DELETE FROM members WHERE id = $1 RETURNING *', [id]);
-
-      if (result.rowCount === 0) {
-          return res.status(404).json({ message: 'Mitglied nicht gefunden' });
-      }
-
-      res.status(200).json({
-          message: 'Mitglied erfolgreich gelöscht',
-          deletedMember: result.rows[0],
-      });
-  } catch (error) {
-      console.error(error);
-      res.status(500).json({ message: 'Fehler beim Löschen des Mitglieds' });
-  }
+module.exports = {
+    registerMember,
+    updateMember,
+    deleteMember,
+    getMemberById,
+    getAllMembers,
 };
-
-module.exports = { registerMember, updateMember, deleteMember, getMemberById, getAllMembers };

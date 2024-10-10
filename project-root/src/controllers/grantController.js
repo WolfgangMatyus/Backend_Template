@@ -1,11 +1,11 @@
-const pool = require('../config/db_pg');
+const sequelize = require('../config/database');
 
 // Förderungsansuchen erstellen
 const applyForGrant = async (req, res) => {
   const { memberId, grantType, amount, description } = req.body;
 
   try {
-    const result = await pool.query(
+    const result = await sequelize.query(
       'INSERT INTO grants (member_id, grant_type, amount, description) VALUES ($1, $2, $3, $4) RETURNING *',
       [memberId, grantType, amount, description]
     );

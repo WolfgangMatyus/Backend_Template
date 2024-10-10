@@ -15,19 +15,24 @@ postgreSQL
     npm install body-parser
 #### Postgres node.js package 
     npm install pg
-#### JWT Authentifizierung mit bcrypt und jsonwebtoken und express-validator
-    npm install bcryptjs jsonwebtoken express-validator
-#### jest und Suptertest
-    npm install --save-dev jest supertest
+
 #### sequelize für ORM
     npm install sequelize
 #### PostgreSQL-Treiber für DB-Kommunikation
     npm install pg pg-hstore
+#### PDFkit zur PDF-Dokument Erstellung
+    npm install puppeteer
+    npm install pdfkit
+#### jest und Suptertest
+    npm install --save-dev jest supertest
 
 ### Sicherheit
 
 #### dotenv zur Exklusion von Schlüssel
     npm install dotenv
+
+#### JWT Authentifizierung mit bcrypt und jsonwebtoken und express-validator
+    npm install bcryptjs jsonwebtoken express-validator
 
 ### Optional    
 #### change restart mit nodemon

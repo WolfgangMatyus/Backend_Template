@@ -1,11 +1,11 @@
-const pool = require('../config/db_pg');
+const sequelize = require('../config/database');
 
 // Erstellen eines neuen Blogposts
 const createBlogPost = async (req, res) => {
   const { title, description, date, location } = req.body;
   
   try {
-    const result = await pool.query(
+    const result = await sequelize.query(
       'INSERT INTO blog_posts (title, description, date, location) VALUES ($1, $2, $3, $4) RETURNING *',
       [title, description, date, location]
     );
@@ -23,7 +23,7 @@ const createBlogPost = async (req, res) => {
 // Abrufen aller Blogposts
 const getAllBlogPosts = async (req, res) => {
   try {
-    const result = await pool.query('SELECT * FROM blog_posts');
+    const result = await sequelize.query('SELECT * FROM blog_posts');
     res.status(200).json(result.rows);
   } catch (error) {
     console.error(error);

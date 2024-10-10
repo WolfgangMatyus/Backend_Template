@@ -1,12 +1,15 @@
+// membersRoutes.js
 const express = require('express');
-const { 
-  registerMember, 
-  getAllMembers, 
-  getMemberById, 
+const { registerMemberController } = require('../controllers/membersController');
+const {
+  registerMember,
+  getAllMembers,
+  getMemberById,
   updateMember,
-  deleteMember 
-} = require('../controllers/membersController');
-const { validateMemberInput } = require('../middlewares/validatMemberInputMiddleware');
+  deleteMember
+} = require('../controllers/membersController'); // Achte darauf, den richtigen Dateinamen zu verwenden
+const { validateMemberInput } = require('../middlewares/validateMemberInputMiddleware'); // Hier auch sicherstellen
+
 const router = express.Router();
 
 // POST /api/v1/members - Mitglieder Registrierung
@@ -19,7 +22,7 @@ router.get('/', getAllMembers);
 router.get('/:id', getMemberById);
 
 // PUT /api/v1/members/:id - Mitgliederprofil aktualisieren
-router.put('/:id', updateMember);
+router.put('/:id', validateMemberInput, updateMember);
 
 // DELETE /api/v1/members/:id - Mitglied löschen
 router.delete('/:id', deleteMember);

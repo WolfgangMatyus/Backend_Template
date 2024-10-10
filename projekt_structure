@@ -1,4 +1,5 @@
 -DB
+    +TestData
     +SLQ-Skript
 -node_modules
 -projetct-root
@@ -7,6 +8,8 @@
             +database.js
         -controllers
             +authController.js
+            +addressesContorller.js
+            +contributionItemsController.js
             +contributionsController.js
             +grantController.js
             +memberController.js
@@ -15,26 +18,43 @@
         -middlewares
             +authMiddleware.js
             +authoriseRolesMiddleware.js
+            +validateMemberInputMiddleware.js
             +validateUserInputMiddleware.js
-            +validateMemberMiddleware.js
         -models
-            +member.js
-            +user.js
+            +addresses.js
+            +archivedMembers.js
+            +associations.js
+            +clubInfo.js
+            +contributionItems.js
+            +contributions.js
+            +members.js
             +roles.js
+            +user.js
             +userRoles.js
         -routes
+            +addressesRoutes.js
             +authRoutes.js
-            +contributionRoutes.js
+            +contributionItemsRoutes.js
+            +contributionsRoutes.js
             +grantRoutes.js
             +membersRoutes.js
             +newsRoutes.js
             +roleRoutes.js
             +userRoutes.js
         -security
-            +auth.js
             +jwt.js
             +permission.js
+        -services
+            +addressesService.js
+            +contributionItemsService.js
+            +contributionsService.js
+            +membersService.js
     -test
+    -uploads
+        -blog_uploads
+        -contributions
+            +PDF.pdf
+        -profile_pictures
 .env
 package.json
 server.js

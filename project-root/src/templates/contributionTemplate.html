@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Beitragsvorschreibung</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .header h1 {
+            margin: 0;
+        }
+        .contact-info {
+            text-align: left;
+            margin-top: 10px;
+            font-size: 14px;
+        }
+        .recipient {
+            margin-top: 40px;
+            font-size: 14px;
+        }
+        .date {
+            text-align: right;
+            margin-top: 40px;
+            font-size: 14px;
+        }
+        .title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-top: 40px;
+        }
+        .standard-text {
+            margin-top: 20px;
+            font-size: 14px;
+        }
+        .table {
+            margin-top: 20px;
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .table th, .table td {
+            border: 1px solid #000;
+            padding: 8px;
+            text-align: left;
+        }
+        .total {
+            text-align: right;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+        .signature {
+            margin-top: 40px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <div class="club-info">
+            <h1>UJC Sakura Yanagi JUDO</h1>
+            <div class="contact-info">
+                <p>Web: http://www.sakura-yanagi-judo.at</p>
+                <p>E-Mail: ofce@sakura-yanagi-judo.at</p>
+                <p>Tel-Trainer: +43 (0) 676 / 775 89 14</p>
+                <p>Tel-Ofce: +43 (0) 676 / 461 88 83</p>
+                <p>Postadresse: Calvigasse 4/1/26, 1230 Wien</p>
+            </div>
+        </div>
+        <div class="logo">
+            <img src="sakura-yanagi-judo_logo.png" alt="Vereinslogo" style="max-height: 100px;">
+        </div>
+    </div>
+
+    <div class="recipient">
+        <p>An:</p>
+        <p>{{memberName}}</p>
+        <p>{{memberAddress}}</p>
+        <p>{{memberPostalCode}} {{memberCity}}</p>
+    </div>
+
+    <div class="date">
+        <p>Datum: {{currentDate}}</p>
+    </div>
+
+    <div class="title">
+        <p>Mitgliedsbeitrag für das Semester {{semester}} {{year}}</p>
+    </div>
+
+    <div class="standard-text">
+        <p>Sehr geehrtes Vereinsmitglied!</p>
+        <p>Gemäß der Vereinsstatuten schreiben wir für das vergangene Semester den Mitgliedsbeitrag inkl. mitgliedsbezogenen Positionen vor:</p>
+    </div>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Pos.</th>
+                <th>Bezeichnung</th>
+                <th>Anzahl</th>
+                <th>Beitrag</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{#each contributions}}
+            <tr>
+                <td>{{@index}}</td>
+                <td>{{this.description}}</td>
+                <td>{{this.quantity}}</td>
+                <td>{{this.amount}} €</td>
+            </tr>
+            {{/each}}
+        </tbody>
+    </table>
+
+    <div class="total">
+        <p>Gesamtbeitrag: {{totalAmount}} €</p>
+    </div>
+
+    <div class="standard-text">
+        <p>Wir bitten um Überweisung auf das unten stehende Konto, binnen 14 Tagen nach Erhalt der Rechnung.</p>
+        <p>Bei Rückfragen stehen wir euch jederzeit zur Verfügung.</p>
+    </div>
+
+    <div class="signature">
+        <p>Sportliche Grüße,</p>
+        <p>UJC Sakura Yanagi JUDO</p>
+    </div>
+</body>
+</html>

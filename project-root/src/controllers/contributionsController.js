@@ -1,31 +1,84 @@
-const pool = require('../config/db_pg');
+// contributionsController.js
 
-// Beitragsvorschreibungen generieren
-const generateContributions = async (req, res) => {
-  try {
-    // Hier wäre die Logik zum Generieren von Beitragsvorschreibungen für alle Mitglieder
-    // Das könnte eine Berechnung oder ein Abruf aus der Datenbank sein
-    res.status(201).json({ message: 'Beitragsvorschreibungen erfolgreich generiert' });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Fehler beim Generieren der Beitragsvorschreibungen' });
-  }
+const contributionsService = require('../services/contributionsService');
+
+// Beitrag erstellen
+const createContribution = async (req, res) => {
+    try {
+        const contribution = await contributionsService.createContribution(req.body);
+        res.status(201).json(contribution);
+    } catch (error) {
+        res.status(500).json({ message: 'Fehler beim Erstellen des Beitrags.', error });
+    }
 };
 
-// Beitragsvorschreibung an ein Mitglied senden
-const sendContribution = async (req, res) => {
-  const { id } = req.params;
-
-  try {
-    // Logik zum Versenden der Beitragsvorschreibung an das spezifische Mitglied
-    res.status(200).json({ message: `Beitragsvorschreibung an Mitglied ${id} gesendet` });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Fehler beim Senden der Beitragsvorschreibung' });
-  }
+// Alle Beiträge abrufen
+const getAllContributions = async (req, res) => {
+    try {
+        const contributions = await contributionsService.getAllContributions();
+        res.status(200).json(contributions);
+    } catch (error) {
+        res.status(500).json({ message: 'Fehler beim Abrufen der Beiträge.', error });
+    }
 };
 
-module.exports = {
-  generateContributions,
-  sendContribution
+// Beitrag nach ID abrufen
+const getContributionById = async (req, res) => {
+    console.log('Anfrage für Beitrag ID:', req.params.id);
+    try {
+        const contribution = await contributionsService.getContributionById(req.params.id);
+        if (!contribution) {
+            return res.status(404).json({ message: 'Beitrag nicht gefunden.' });
+        }
+        res.status(200).json(contribution);
+    } catch (error) {
+        res.status(500).json({ message: 'Fehler beim Abrufen des Beitrags.', error });
+    }
 };
+
+// Beitrag aktualisieren
+const updateContribution = async (req, res) => {
+    try {
+        const contribution = await contributionsService.updateContribution(req.params.id, req.body);
+        if (!contribution) {
+            return res.status(404).json({ message: 'Beitrag nicht gefunden.' });
+        }
+        res.status(200).json(contribution);
+    } catch (error) {
+        res.status(500).json({ message: 'Fehler beim Aktualisieren des Beitrags.', error });
+    }
+};
+
+// Beitrag löschen
+const deleteContribution = async (req, res) => {
+    try {
+        const result = await contributionsService.deleteContribution(req.params.id);
+        if (!result) {
+            return res.status(404).json({ message: 'Beitrag nicht gefunden.' });
+        }
+        res.status(200).json({ message: 'Beitrag erfolgreich gelöscht.' });
+    } catch (error) {
+        res.status(500).json({ message: 'Fehler beim Löschen des Beitrags.', error });
+    }
+};
+
+// PDF generieren
+const generateContributionPDF = async (req, res) => {
+    console.log('PDF-Generierung aufgerufen für Beitrag ID:', req.params.id);
+    try {
+        const contributionId = req.params.id;
+        console.log(`Beitrag ID: ${contributionId}`);
+        const { filename, filePath } = await contributionsService.generateContributionPDF(req.params.id);
+
+        if (!contribution) {
+            console.log(`Kein Beitrag mit ID: ${contributionId}`);
+            return res.status(404).json({ message: 'Beitrag nicht gefunden.' });
+        }
+
+        res.status(200).send({ message: 'PDF erfolgreich erstellt', filename, filePath });
+    } catch (error) {
+        res.status(500).json({ message: 'Fehler beim Erstellen des PDFs.', error: error.message });
+    }
+};
+
+module.exports = { createContribution, getAllContributions, getContributionById, updateContribution, deleteContribution, generateContributionPDF };
