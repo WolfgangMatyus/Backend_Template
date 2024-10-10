@@ -1,72 +1,47 @@
 // membersController.js
-const { insertAddress, addressExists } = require('../services/addressesService'); // Importiere addressExists
+const Address = require('../models/addresses');
+const addressesService = require('../services/addressesService');
+
 const {
-    registerMember: registerMemberService,
-    getAllMembers: getAllMembersService,
-    getMemberById: getMemberByIdService,
-    updateMember: updateMemberService,
-    deleteMember: deleteMemberService,
+    findMemberById,
+    registerMemberService,
+    getAllMembersService,
+    getMemberByIdService,
+    updateMemberService,
+    deleteMemberService,
 } = require('../services/membersService');
-const { sequelize } = require('../config/database'); // Importiere die Datenbankkonfiguration
 
 const registerMember = async (req, res) => {
-    const {
-        firstName,
-        lastName,
-        dateOfBirth, 
-        gender,
-        memberSince,
-        guardianName,
-        guardianContact,
-        address,
-        email,
-        phone,
-        nationality
-    } = req.body;
+    const { first_name, last_name, date_of_birth, gender, email, phone, nationality, guardian_name, guardian_contact } = req.body;
+    const { street, house_number, stair, door_number, postal_code, city, country } = req.body;
 
-    const transaction = await sequelize.transaction(); // Start einer Transaktion
+    // Member-Daten
+    const memberData = { first_name, last_name, date_of_birth, gender, email, phone, nationality, guardian_name, guardian_contact };
+
+    // Address-Daten
+    const addressData = { street, house_number, stair, door_number, postal_code, city, country };
+
     try {
-        // Überprüfen, ob die Adresse bereits existiert
-        const exists = await addressExists(address); // Überprüfe, ob die Adresse existiert
-        if (exists) {
-            return res.status(400).json({ message: 'Diese Adresse existiert bereits.' });
-        }
-
-        // Zuerst die Adresse hinzufügen und die addressId zurückgeben
-        const addressId = await insertAddress(address, { transaction }); // Einfügen der Adresse mit Transaktion
-
-        // Nun das Mitglied registrieren
-        const newMember = await registerMemberService({
-            firstName,
-            lastName,
-            dateOfBirth,
-            gender,
-            memberSince,
-            guardianName,
-            guardianContact,
-            addressId,
-            email,
-            phone,
-            nationality
-        }, { transaction });
-
-        await transaction.commit(); // Transaktion bestätigen
-
-        res.status(201).json({
-            message: 'Mitglied erfolgreich registriert',
-            member: newMember,
-        });
+        // Mitglied erstellen (und Adresse verknüpfen)
+        const newMember = await registerMemberService(memberData, addressData);
+        res.status(201).json(newMember);
     } catch (error) {
-        await transaction.rollback(); // Transaktion zurückrollen bei Fehler
-        console.error('Fehler bei der Registrierung:', error);
-        res.status(500).json({ message: 'Fehler bei der Registrierung: ' + error.message });
+        console.error('Fehler beim Erstellen des Mitglieds:', error);
+        res.status(500).json({ message: 'Fehler beim Erstellen des Mitglieds' });
     }
 };
 
 // Abrufen aller Mitglieder
 const getAllMembers = async (req, res) => {
     try {
-        const members = await getAllMembersService();
+        // Abrufen aller Mitglieder und der zugehörigen Adressen
+        const members = await getAllMembersService({
+            include: [{
+                model: Address,  // Hier wird die Address-Verknüpfung hinzugefügt
+                as: 'address',   // Alias für die Verknüpfung
+                attributes: ['street', 'house_number', 'stair', 'door_number', 'postal_code', 'city', 'country']  // Nur relevante Adressfelder abrufen
+            }]
+        });
         res.status(200).json(members);
     } catch (error) {
         console.error('Fehler beim Abrufen der Mitglieder:', error);
@@ -79,7 +54,7 @@ const getMemberById = async (req, res) => {
     const { id } = req.params;
 
     try {
-        const member = await getMemberByIdService(id);
+        const member = await getMemberByIdService(id); // Hier den Service aufrufen
         if (!member) {
             return res.status(404).json({ message: 'Mitglied nicht gefunden' });
         }
@@ -90,46 +65,35 @@ const getMemberById = async (req, res) => {
     }
 };
 
-// Aktualisieren eines Mitgliedsprofils
 const updateMember = async (req, res) => {
     const { id } = req.params;
-    const {
-        firstName,
-        lastName,
-        dateOfBirth,
-        gender,
-        memberSince,
-        guardianName,
-        guardianContact,
-        addressId,
-        email,
-        phone,
-        nationality
-    } = req.body;
+    const { first_name, last_name, date_of_birth, gender, member_since, guardian_name, guardian_contact, email, phone, nationality } = req.body;
+    const { street, house_number, stair, door_number, postal_code, city, country } = req.body;
 
-    // Validierung der erforderlichen Felder
-    if (!firstName || !lastName || !dateOfBirth || !gender || !memberSince || !guardianName || !guardianContact || !email || !phone || !nationality) {
-        return res.status(400).json({ message: 'Alle Felder sind erforderlich.' });
-    }
+    // Member-Daten
+    const memberData = { first_name, last_name, date_of_birth, gender, member_since, guardian_name, guardian_contact, email, phone, nationality };
+
+    // Address-Daten
+    const addressData = { street, house_number, stair, door_number, postal_code, city, country };
 
     try {
-        const updatedMember = await updateMemberService(id, {
-            firstName,
-            lastName,
-            dateOfBirth,
-            gender,
-            memberSince,
-            guardianName,
-            guardianContact,
-            addressId,
-            email,
-            phone,
-            nationality
-        });
-
-        if (!updatedMember) {
+        // Schritt 1: Mitglied finden
+        const existingMember = await findMemberById(id);
+        if (!existingMember) {
             return res.status(404).json({ message: 'Mitglied nicht gefunden' });
         }
+
+        // Schritt 2: Adresse überprüfen und aktualisieren oder neue Adresse erstellen
+        let address = await addressesService.findAddressByDetails(addressData);
+        if (!address) {
+            address = await addressesService.createAddress(addressData);
+        }
+
+        // Schritt 3: Mitglied aktualisieren
+        const updatedMember = await updateMemberService(id, {
+            ...memberData,
+            address_id: address.id, // Verknüpfung mit aktualisierter oder neuer Adresse
+        });
 
         res.status(200).json({
             message: 'Mitglied erfolgreich aktualisiert',
@@ -140,6 +104,7 @@ const updateMember = async (req, res) => {
         res.status(500).json({ message: 'Fehler beim Aktualisieren des Mitglieds: ' + error.message });
     }
 };
+
 
 // Löschen eines Mitglieds anhand der ID
 const deleteMember = async (req, res) => {

@@ -1,5 +1,6 @@
 // membersRoutes.js
 const express = require('express');
+const { registerMemberController } = require('../controllers/membersController');
 const {
   registerMember,
   getAllMembers,
@@ -21,7 +22,7 @@ router.get('/', getAllMembers);
 router.get('/:id', getMemberById);
 
 // PUT /api/v1/members/:id - Mitgliederprofil aktualisieren
-router.put('/:id', updateMember);
+router.put('/:id', validateMemberInput, updateMember);
 
 // DELETE /api/v1/members/:id - Mitglied löschen
 router.delete('/:id', deleteMember);

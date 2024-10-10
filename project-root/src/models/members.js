@@ -66,14 +66,6 @@ const Member = sequelize.define('Member', {
         type: DataTypes.STRING,
         allowNull: true,
     },
-    created_at: {
-        type: DataTypes.DATE,
-        defaultValue: DataTypes.NOW,
-    },
-    updated_at: {
-        type: DataTypes.DATE,
-        defaultValue: DataTypes.NOW,
-    },
 }, {
     tableName: 'members', // Der Name der Tabelle in der Datenbank
     timestamps: true,     // Aktiviert automatische Timestamps

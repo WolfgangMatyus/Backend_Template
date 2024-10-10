@@ -1,9 +1,9 @@
 // associations.js
-const Member = require('./models/member');
-const Address = require('./models/address');
-const ArchivedMember = require('./models/archivedMembers');
-const Contribution = require('./models/contributions');
-const ContributionItem = require('./models/contributionItems');
+const Member = require('./members');
+const Address = require('./addresses');
+const ArchivedMember = require('./archivedMembers');
+const Contribution = require('./contributions');
+const ContributionItem = require('./contributionItems');
 
 // 1. Ein Mitglied hat viele Beiträge (One-to-Many Beziehung)
 Member.hasMany(Contribution, { foreignKey: 'member_id' });
@@ -17,6 +17,19 @@ ContributionItem.belongsTo(Contribution, { foreignKey: 'contribution_id' });
 ArchivedMember.belongsTo(Member, { foreignKey: 'original_member_id' });
 
 
-// Ein Mitglied hat eine Adresse (One-to-One Beziehung)
-Member.belongsTo(Address, { foreignKey: 'address_id', onDelete: 'SET NULL' });
-Address.hasMany(Member, { foreignKey: 'address_id' }); // Falls du mehrere Mitglieder an eine Adresse binden möchtest
+// Ein Mitglied gehört zu einer Adresse (belongsTo)
+Member.belongsTo(Address, {
+    foreignKey: 'address_id',   // Das Feld in der members Tabelle, das auf die address_id verweist
+    as: 'address',              // Alias für die Beziehung (dieser wird beim Abrufen verwendet)
+});
+
+// Eine Adresse kann viele Mitglieder haben (optional, falls relevant)
+Address.hasMany(Member, {
+    foreignKey: 'address_id',
+    as: 'members'
+});
+
+module.exports = {
+    Member,
+    Address,
+};

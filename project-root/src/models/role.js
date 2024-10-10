@@ -1,4 +1,4 @@
-// src/models/role.js
+// role.js
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/database'); // Stelle sicher, dass dieser Pfad korrekt ist
 

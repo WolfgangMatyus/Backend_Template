@@ -1,6 +1,6 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/database');
-const Member = require('./member');  // Importiere das Member-Modell für die Referenz
+const Member = require('./members');  // Importiere das Member-Modell für die Referenz
 
 const ArchivedMember = sequelize.define('ArchivedMember', {
     id: {

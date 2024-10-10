@@ -5,14 +5,13 @@ const isValidEmail = (email) => {
 
 const validateMemberInput = (req, res, next) => {
   const {
-      firstName,
-      lastName,
-      dateOfBirth,
+    first_name,
+    last_name,
+    date_of_birth,
       gender,
-      memberSince,
-      guardianName,
-      guardianContact,
-      address,
+      member_since,
+      guardian_name,
+      guardian_contact,
       email,
       phone,
       nationality
@@ -21,14 +20,13 @@ const validateMemberInput = (req, res, next) => {
   const missingFields = []; // Array für fehlende Felder
 
   // Überprüfe, ob die erforderlichen Felder ausgefüllt sind und füge fehlende Felder zum Array hinzu
-  if (!firstName) missingFields.push('firstName');
-  if (!lastName) missingFields.push('lastName');
-  if (!dateOfBirth) missingFields.push('dateOfBirth');
+  if (!first_name) missingFields.push('first_name');
+  if (!last_name) missingFields.push('last_name');
+  if (!date_of_birth) missingFields.push('date_of_birth');
   if (!gender) missingFields.push('gender');
-  if (!memberSince) missingFields.push('memberSince');
-  if (!guardianName) missingFields.push('guardianName');
-  if (!guardianContact) missingFields.push('guardianContact');
-  if (!address) missingFields.push('address');
+  if (!member_since) missingFields.push('member_since');
+  if (!guardian_name) missingFields.push('guardian_name');
+  if (!guardian_contact) missingFields.push('guardian_contact');
   if (!email) missingFields.push('email');
   if (!phone) missingFields.push('phone');
   if (!nationality) missingFields.push('nationality');

@@ -1,85 +1,95 @@
 // membersService.js
 const sequelize = require('../config/database');
+const Member = require('../models/members');
+const { Address } = require('../models/associations');
+const addressesService = require('../services/addressesService');
 
 // Mitglied registrieren
-const registerMember = async (memberData) => {
-    const {
-        firstName,
-        lastName,
-        dateOfBirth,
-        gender,
-        memberSince,
-        guardianName,
-        guardianContact,
-        addressId,
-        email,
-        phone,
-        nationality
-    } = memberData;
+const registerMemberService = async (memberData, addressData) => {
+    // Schritt 1: Adresse überprüfen
+    let address = await addressesService.findAddressByDetails(addressData);
 
-    try {
-        const result = await sequelize.query(
-            'INSERT INTO members (first_name, last_name, date_of_birth, gender, member_since, guardian_name, guardian_contact, address_id, email, phone, nationality) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING *',
-            [firstName, lastName, dateOfBirth, gender, memberSince, guardianName, guardianContact, addressId, email, phone, nationality]
-        );
-        return result.rows[0]; // Gibt das neu registrierte Mitglied zurück
-    } catch (error) {
-        console.error('Fehler beim Registrieren des Mitglieds:', error);
-        throw new Error('Fehler bei der Registrierung des Mitglieds');
+    // Wenn die Adresse nicht existiert, neu anlegen
+    if (!address) {
+        address = await addressesService.createAddress(addressData);
     }
+
+    // Schritt 2: Mitglied anlegen mit der Address-ID
+    const member = await Member.create({
+        ...memberData,
+        address_id: address.id,  // Verknüpfen mit der Adresse
+    });
+
+    return member;
 };
 
 // Alle Mitglieder abrufen
-const getAllMembers = async () => {
-    try {
-        const result = await sequelize.query('SELECT * FROM members');
-        return result.rows;
-    } catch (error) {
-        console.error('Fehler beim Abrufen der Mitglieder:', error);
-        throw new Error('Fehler beim Abrufen der Mitglieder');
-    }
+const getAllMembersService = async () => {
+    return await Member.findAll({
+        include: [{
+            model: Address,
+            as: 'address', // Alias entsprechend der Definition in associations.js
+        }],
+    });
 };
 
 // Einzelnes Mitglied anhand der ID abrufen
-const getMemberById = async (id) => {
+const getMemberByIdService = async (id) => {
     try {
-        const result = await sequelize.query('SELECT * FROM members WHERE id = $1', [id]);
-        return result.rows[0] || null; // Gibt null zurück, wenn kein Mitglied gefunden wurde
+        const member = await Member.findOne({
+            where: { id }, // Suche nach der ID
+            include: [{
+                model: Address,
+                as: 'address', // Alias entsprechend der Definition in associations.js
+                attributes: ['street', 'house_number', 'stair', 'door_number', 'postal_code', 'city', 'country'], // Nur relevante Adressfelder abrufen
+            }],
+        });
+        return member || null; // Gibt null zurück, wenn kein Mitglied gefunden wurde
     } catch (error) {
         console.error('Fehler beim Abrufen des Mitglieds:', error);
         throw new Error('Fehler beim Abrufen des Mitglieds');
     }
 };
 
-const updateMember = async (id, memberData) => {
-    const {
-        firstName,
-        lastName,
-        dateOfBirth,
-        gender,
-        memberSince,
-        guardianName,
-        guardianContact,
-        addressId,
-        email,
-        phone,
-        nationality
-    } = memberData;
+// Mitglied anhand der ID finden
+const findMemberById = async (id) => {
+    return await Member.findByPk(id);
+};
+
+// Mitglied aktualisieren
+const updateMemberService = async (id, memberData) => {
+    const { first_name, last_name, date_of_birth, gender, member_since, guardian_name, guardian_contact, email, phone, nationality, address_id, } = memberData;
 
     try {
-        const result = await sequelize.query(
-            'UPDATE members SET first_name = $1, last_name = $2, date_of_birth = $3, gender = $4, member_since = $5, guardian_name = $6, guardian_contact = $7, address_id = $8, email = $9, phone = $10, nationality = $11 WHERE id = $12 RETURNING *',
-            [firstName, lastName, dateOfBirth, gender, memberSince, guardianName, guardianContact, addressId, email, phone, nationality, id]
+        // Mitglied aktualisieren
+        const [numberOfAffectedRows, updatedMembers] = await Member.update(
+            { first_name, last_name, date_of_birth, gender, member_since, guardian_name, guardian_contact, email, phone, nationality, address_id, },
+            {
+                where: { id },
+                returning: true, // Gibt die aktualisierten Daten zurück
+            }
         );
-        return result.rows[0] || null; // Gibt null zurück, wenn kein Mitglied gefunden wurde
+
+        if (numberOfAffectedRows === 0) {
+            return null; // Gibt null zurück, wenn kein Mitglied aktualisiert wurde
+        }
+
+        return updatedMembers[0]; // Gibt das aktualisierte Mitglied zurück
     } catch (error) {
         console.error('Fehler beim Aktualisieren des Mitglieds:', error);
         throw new Error('Fehler beim Aktualisieren des Mitglieds');
     }
 };
 
+// Exporte der Funktionen
+module.exports = {
+    findMemberById,
+    updateMemberService,
+};
+
+
 // Mitglied löschen
-const deleteMember = async (id) => {
+const deleteMemberService = async (id) => {
     try {
         const result = await sequelize.query('DELETE FROM members WHERE id = $1 RETURNING *', [id]);
         return result.rowCount > 0 ? result.rows[0] : null; // Gibt null zurück, wenn kein Mitglied gefunden wurde
@@ -90,9 +100,10 @@ const deleteMember = async (id) => {
 };
 
 module.exports = {
-    registerMember,
-    getAllMembers,
-    getMemberById,
-    updateMember,
-    deleteMember,
+    findMemberById,
+    registerMemberService,
+    getAllMembersService,
+    getMemberByIdService,
+    updateMemberService,
+    deleteMemberService,
 };

@@ -11,6 +11,19 @@ const getAddressById = async (id) => {
     return await Address.findByPk(id);
 };
 
+// Funktion zum Überprüfen, ob eine Adresse bereits existiert
+const findAddressByDetails = async (addressData) => {
+    return await Address.findOne({
+        where: {
+            street: addressData.street,
+            house_number: addressData.house_number,
+            postal_code: addressData.postal_code,
+            city: addressData.city,
+            country: addressData.country,
+        }
+    });
+};
+
 // Erstellen einer neuen Adresse
 const createAddress = async (addressData) => {
     return await Address.create(addressData);
@@ -38,6 +51,7 @@ const deleteAddress = async (id) => {
 module.exports = {
     getAllAddresses,
     getAddressById,
+    findAddressByDetails,
     createAddress,
     updateAddress,
     deleteAddress

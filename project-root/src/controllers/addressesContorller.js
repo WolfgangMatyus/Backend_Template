@@ -63,7 +63,7 @@ const deleteAddress = async (req, res) => {
         if (!deleted) {
             return res.status(404).json({ message: 'Adresse nicht gefunden' });
         }
-        res.status(204).json();
+        res.status(200).json({ message: 'Adresse ' + id + ' wurde gelöscht' });
     } catch (error) {
         console.error('Fehler beim Löschen der Adresse:', error);
         res.status(500).json({ message: 'Fehler beim Löschen der Adresse' });

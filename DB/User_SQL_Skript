@@ -37,7 +37,7 @@ VALUES ('Calvigasse', '4', '1', '26', '1230', 'Wien', 'Österreich')
 INSERT INTO club_info (club_name, web_address, email, phone_trainer, phone_office, address_id, iban, bic, logo_path)
 VALUES ('UJC Sakura Yanagi JUDO', 'http://www.sakura-yanagi-judo.at', 'office@sakura-yanagi-judo.at', '+43 (0) 676 / 775 89 14', '+43 (0) 676 / 461 88 83', address_id_just_created, 'AT12 3288 0000 0246 9161', 'RLNWATW1880', '/path/to/sakura-yanagi-judo_logo.png');
 
--- Mitglieder Tabelle mit zusätzlichen Feldern für Geschlecht, Gesundheitliche Probleme, Mitglied seit und Erziehungsberechtigter
+-- Mitglieder Tabelle 
 CREATE TABLE members (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),           -- UUID als Primärschlüssel
     status VARCHAR(20) DEFAULT 'active',                      -- Status ('active', 'inactive', 'archived')
