@@ -1,3 +1,4 @@
+// members.js
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/database');
 
@@ -19,17 +20,22 @@ const Member = sequelize.define('Member', {
         type: DataTypes.DATEONLY,
         allowNull: false,
     },
-    address: {
+    gender: {  // Neues Feld für das Geschlecht
         type: DataTypes.STRING,
         allowNull: false,
     },
-    postal_code: {
-        type: DataTypes.STRING,
+    member_since: { // Neues Feld für "Mitglied seit"
+        type: DataTypes.DATEONLY,
         allowNull: false,
+        defaultValue: DataTypes.NOW,
     },
-    city: {
-        type: DataTypes.STRING,
-        allowNull: false,
+    address_id: {
+        type: DataTypes.UUID,
+        references: {
+            model: 'addresses', // Name der Tabelle, auf die verwiesen wird
+            key: 'id',
+        },
+        allowNull: true, // Kann null sein, falls kein Adressdatensatz vorhanden ist
     },
     email: {
         type: DataTypes.STRING,
@@ -52,6 +58,14 @@ const Member = sequelize.define('Member', {
         type: DataTypes.STRING,
         defaultValue: 'active',
     },
+    guardian_contact: { // Neues Feld für den Kontakt des Erziehungsberechtigten
+        type: DataTypes.STRING,
+        allowNull: true,
+    },
+    guardian_name: { // Neues Feld für den Namen des Erziehungsberechtigten
+        type: DataTypes.STRING,
+        allowNull: true,
+    },
     created_at: {
         type: DataTypes.DATE,
         defaultValue: DataTypes.NOW,
@@ -62,7 +76,7 @@ const Member = sequelize.define('Member', {
     },
 }, {
     tableName: 'members', // Der Name der Tabelle in der Datenbank
-    timestamps: false,    // Wenn du die Timestamps nicht automatisch verwalten möchtest
+    timestamps: true,     // Aktiviert automatische Timestamps
 });
 
 module.exports = Member;

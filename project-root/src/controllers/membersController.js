@@ -1,39 +1,76 @@
-const sequelize = require('../config/database');
+// membersController.js
+const { insertAddress, addressExists } = require('../services/addressesService'); // Importiere addressExists
+const {
+    registerMember: registerMemberService,
+    getAllMembers: getAllMembersService,
+    getMemberById: getMemberByIdService,
+    updateMember: updateMemberService,
+    deleteMember: deleteMemberService,
+} = require('../services/membersService');
+const { sequelize } = require('../config/database'); // Importiere die Datenbankkonfiguration
 
-// Registrierung eines neuen Mitglieds
 const registerMember = async (req, res) => {
-    // Stelle sicher, dass die Variablen korrekt benannt sind, um mit dem Request-Body übereinzustimmen
-    const { firstName, lastName, dateOfBirth, address, email, phone, postal_code, nation, city } = req.body;
+    const {
+        firstName,
+        lastName,
+        dateOfBirth, 
+        gender,
+        memberSince,
+        guardianName,
+        guardianContact,
+        address,
+        email,
+        phone,
+        nationality
+    } = req.body;
 
-    // Validierung der erforderlichen Felder
-    if (!firstName || !lastName || !dateOfBirth || !address || !email || !phone || !postal_code || !nation || !city) {
-        return res.status(400).json({ message: 'Alle Felder sind erforderlich.' });
-    }
-
+    const transaction = await sequelize.transaction(); // Start einer Transaktion
     try {
-        const result = await sequelize.query(
-            'INSERT INTO members (first_name, last_name, date_of_birth, address, email, phone, postal_code, nationality, city) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *',
-            [firstName, lastName, dateOfBirth, address, email, phone, postal_code, nation, city] // Füge city hinzu
-        );
+        // Überprüfen, ob die Adresse bereits existiert
+        const exists = await addressExists(address); // Überprüfe, ob die Adresse existiert
+        if (exists) {
+            return res.status(400).json({ message: 'Diese Adresse existiert bereits.' });
+        }
+
+        // Zuerst die Adresse hinzufügen und die addressId zurückgeben
+        const addressId = await insertAddress(address, { transaction }); // Einfügen der Adresse mit Transaktion
+
+        // Nun das Mitglied registrieren
+        const newMember = await registerMemberService({
+            firstName,
+            lastName,
+            dateOfBirth,
+            gender,
+            memberSince,
+            guardianName,
+            guardianContact,
+            addressId,
+            email,
+            phone,
+            nationality
+        }, { transaction });
+
+        await transaction.commit(); // Transaktion bestätigen
 
         res.status(201).json({
             message: 'Mitglied erfolgreich registriert',
-            member: result.rows[0]
+            member: newMember,
         });
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Fehler bei der Registrierung' });
+        await transaction.rollback(); // Transaktion zurückrollen bei Fehler
+        console.error('Fehler bei der Registrierung:', error);
+        res.status(500).json({ message: 'Fehler bei der Registrierung: ' + error.message });
     }
 };
 
 // Abrufen aller Mitglieder
 const getAllMembers = async (req, res) => {
     try {
-        const result = await sequelize.query('SELECT * FROM members');
-        res.status(200).json(result.rows);
+        const members = await getAllMembersService();
+        res.status(200).json(members);
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Fehler beim Abrufen der Mitglieder' });
+        console.error('Fehler beim Abrufen der Mitglieder:', error);
+        res.status(500).json({ message: 'Fehler beim Abrufen der Mitglieder: ' + error.message });
     }
 };
 
@@ -42,66 +79,92 @@ const getMemberById = async (req, res) => {
     const { id } = req.params;
 
     try {
-        const result = await sequelize.query('SELECT * FROM members WHERE id = $1', [id]);
-        if (result.rows.length === 0) {
+        const member = await getMemberByIdService(id);
+        if (!member) {
             return res.status(404).json({ message: 'Mitglied nicht gefunden' });
         }
-        res.status(200).json(result.rows[0]);
+        res.status(200).json(member);
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Fehler beim Abrufen des Mitglieds' });
+        console.error('Fehler beim Abrufen des Mitglieds:', error);
+        res.status(500).json({ message: 'Fehler beim Abrufen des Mitglieds: ' + error.message });
     }
 };
 
 // Aktualisieren eines Mitgliedsprofils
 const updateMember = async (req, res) => {
     const { id } = req.params;
-    const { firstName, lastName, dateOfBirth, address, email, phone, postal_code, nation, city } = req.body;
+    const {
+        firstName,
+        lastName,
+        dateOfBirth,
+        gender,
+        memberSince,
+        guardianName,
+        guardianContact,
+        addressId,
+        email,
+        phone,
+        nationality
+    } = req.body;
 
     // Validierung der erforderlichen Felder
-    if (!firstName || !lastName || !dateOfBirth || !address || !email || !phone || !postal_code || !nation || !city) {
-      return res.status(400).json({ message: 'Alle Felder sind erforderlich.' });
+    if (!firstName || !lastName || !dateOfBirth || !gender || !memberSince || !guardianName || !guardianContact || !email || !phone || !nationality) {
+        return res.status(400).json({ message: 'Alle Felder sind erforderlich.' });
     }
 
     try {
-        const result = await sequelize.query(
-            'UPDATE members SET first_name = $1, last_name = $2, date_of_birth = $3, address = $4, email = $5, phone = $6, postal_code = $7, nationality= $8, city = $9 WHERE id = $10 RETURNING *',
-            [firstName, lastName, dateOfBirth, address, email, phone, postal_code, nation, city, id]
-        );
+        const updatedMember = await updateMemberService(id, {
+            firstName,
+            lastName,
+            dateOfBirth,
+            gender,
+            memberSince,
+            guardianName,
+            guardianContact,
+            addressId,
+            email,
+            phone,
+            nationality
+        });
 
-        if (result.rows.length === 0) {
+        if (!updatedMember) {
             return res.status(404).json({ message: 'Mitglied nicht gefunden' });
         }
 
         res.status(200).json({
             message: 'Mitglied erfolgreich aktualisiert',
-            member: result.rows[0]
+            member: updatedMember,
         });
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Fehler beim Aktualisieren des Mitglieds' });
+        console.error('Fehler beim Aktualisieren des Mitglieds:', error);
+        res.status(500).json({ message: 'Fehler beim Aktualisieren des Mitglieds: ' + error.message });
     }
 };
 
 // Löschen eines Mitglieds anhand der ID
 const deleteMember = async (req, res) => {
-  const { id } = req.params;
+    const { id } = req.params;
 
-  try {
-      const result = await sequelize.query('DELETE FROM members WHERE id = $1 RETURNING *', [id]);
+    try {
+        const deletedMember = await deleteMemberService(id);
+        if (!deletedMember) {
+            return res.status(404).json({ message: 'Mitglied nicht gefunden' });
+        }
 
-      if (result.rowCount === 0) {
-          return res.status(404).json({ message: 'Mitglied nicht gefunden' });
-      }
-
-      res.status(200).json({
-          message: 'Mitglied erfolgreich gelöscht',
-          deletedMember: result.rows[0],
-      });
-  } catch (error) {
-      console.error(error);
-      res.status(500).json({ message: 'Fehler beim Löschen des Mitglieds' });
-  }
+        res.status(200).json({
+            message: 'Mitglied erfolgreich gelöscht',
+            deletedMember,
+        });
+    } catch (error) {
+        console.error('Fehler beim Löschen des Mitglieds:', error);
+        res.status(500).json({ message: 'Fehler beim Löschen des Mitglieds: ' + error.message });
+    }
 };
 
-module.exports = { registerMember, updateMember, deleteMember, getMemberById, getAllMembers };
+module.exports = {
+    registerMember,
+    updateMember,
+    deleteMember,
+    getMemberById,
+    getAllMembers,
+};

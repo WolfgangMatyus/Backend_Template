@@ -1,38 +1,41 @@
 -- Erweiterung zur Generierung von UUIDs aktivieren (falls noch nicht aktiviert)
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
+CREATE TABLE addresses (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),     -- UUID als Primärschlüssel
+    street VARCHAR(100) NOT NULL,                       -- Straße
+    house_number VARCHAR(10) NOT NULL,                  -- Hausnummer
+    stair VARCHAR(10),                                  -- Stiege
+    door_number VARCHAR(10),                            -- Türnummer
+    postal_code VARCHAR(10) NOT NULL,                   -- Postleitzahl
+    city VARCHAR(50) NOT NULL,                          -- Stadt
+    country VARCHAR(50) NOT NULL,                       -- Land
+    "createdAt" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,      -- Erstellungsdatum
+    "updatedAt" TIMESTAMP DEFAULT CURRENT_TIMESTAMP       -- Aktualisierungsdatum
+);
+
 CREATE TABLE club_info (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     club_name VARCHAR(100) NOT NULL DEFAULT 'UJC Sakura Yanagi JUDO',
     web_address VARCHAR(100) NOT NULL DEFAULT 'http://www.sakura-yanagi-judo.at',
     email VARCHAR(100) NOT NULL DEFAULT 'office@sakura-yanagi-judo.at',
-    phone_trainer VARCHAR(20) NOT NULL DEFAULT '+43 (0) 676 / 775 89 14',
-    phone_office VARCHAR(20) NOT NULL DEFAULT '+43 (0) 676 / 461 88 83',
+    phone_trainer VARCHAR(25) NOT NULL DEFAULT '+43 (0) 676 / 775 89 14',
+    phone_office VARCHAR(25) NOT NULL DEFAULT '+43 (0) 676 / 461 88 83',
     address_id UUID REFERENCES addresses(id) ON DELETE CASCADE, -- Fremdschlüssel auf die Adressen-Tabelle
     iban VARCHAR(34) NOT NULL DEFAULT 'ATXX XXXX XXXX XXXX XXXX',
     bic VARCHAR(11) NOT NULL DEFAULT 'XXXXATXX',
     logo_path TEXT DEFAULT '/path/to/sakura-yanagi-judo_logo.png'  -- Pfad zum Vereinslogo
 );
 
-CREATE TABLE addresses (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),     -- UUID als Primärschlüssel
-    street VARCHAR(100) NOT NULL,                       -- Straße
-    house_number VARCHAR(10) NOT NULL,                  -- Hausnummer
-    stair VARCHAR(10),                                   -- Stiege
-    door_number VARCHAR(10),                             -- Türnummer
-    postal_code VARCHAR(10) NOT NULL,                   -- Postleitzahl
-    city VARCHAR(50) NOT NULL,                           -- Stadt
-    country VARCHAR(50) NOT NULL                         -- Land
-);
 
 -- Füge eine Adresse in die addresses-Tabelle ein
 INSERT INTO addresses (street, house_number, stair, door_number, postal_code, city, country)
 VALUES ('Calvigasse', '4', '1', '26', '1230', 'Wien', 'Österreich')
-RETURNING id INTO new_address_id;
 
+-- via Postmann die AddressID auslesen für die Verknüpfung mit Vereinsinformationen
 -- Füge die Vereinsinformationen hinzu
 INSERT INTO club_info (club_name, web_address, email, phone_trainer, phone_office, address_id, iban, bic, logo_path)
-VALUES ('UJC Sakura Yanagi JUDO', 'http://www.sakura-yanagi-judo.at', 'office@sakura-yanagi-judo.at', '+43 (0) 676 / 775 89 14', '+43 (0) 676 / 461 88 83', new_address_id, 'AT12 3288 0000 0246 9161', 'RLNWATW1880', '/path/to/sakura-yanagi-judo_logo.png');
+VALUES ('UJC Sakura Yanagi JUDO', 'http://www.sakura-yanagi-judo.at', 'office@sakura-yanagi-judo.at', '+43 (0) 676 / 775 89 14', '+43 (0) 676 / 461 88 83', address_id_just_created, 'AT12 3288 0000 0246 9161', 'RLNWATW1880', '/path/to/sakura-yanagi-judo_logo.png');
 
 -- Mitglieder Tabelle mit zusätzlichen Feldern für Geschlecht, Gesundheitliche Probleme, Mitglied seit und Erziehungsberechtigter
 CREATE TABLE members (
@@ -50,8 +53,8 @@ CREATE TABLE members (
     profile_photo TEXT,                                       -- Pfad zum Profilfoto
     guardian_contact VARCHAR(100),
     guardian_name VARCHAR(100),                               -- Name des Erziehungsberechtigten
-    createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,            -- Erstellungsdatum
-    updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP             -- Aktualisierungsdatum
+    "createdAt" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,            -- Erstellungsdatum
+    "updatedAt" TIMESTAMP DEFAULT CURRENT_TIMESTAMP             -- Aktualisierungsdatum
 );
 
 -- Angenommene Adress-ID für die Testdaten (bitte diese Werte in der tatsächlichen Anwendung entsprechend anpassen)
@@ -101,8 +104,8 @@ CREATE TABLE contributions (
     total_amount DECIMAL(10, 2) NOT NULL,               -- Gesamter Betrag der Vorschreibung
     due_date DATE NOT NULL,                             -- Fälligkeitsdatum
     status VARCHAR(20) DEFAULT 'pending',               -- 'pending', 'paid', 'inactive'
-    createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,      -- Erstellungsdatum
-    updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP       -- Aktualisierungsdatum
+    "createdAt" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,      -- Erstellungsdatum
+    "updatedAt" TIMESTAMP DEFAULT CURRENT_TIMESTAMP       -- Aktualisierungsdatum
 );
 
 -- Trigger-Funktion für contributions
