@@ -92,7 +92,7 @@ CREATE TABLE archived_members (
     phone VARCHAR(20),
     nationality VARCHAR(50),
     profile_photo TEXT,
-    archived_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    "archivedAt" TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Tabelle contributions erstellen

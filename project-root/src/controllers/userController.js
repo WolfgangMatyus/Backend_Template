@@ -1,3 +1,4 @@
+// userController.js
 const bcrypt = require('bcryptjs');
 const User = require('../models/user'); // Importiere das User-Modell
 const Role = require('../models/role'); // Importiere das Role-Modell

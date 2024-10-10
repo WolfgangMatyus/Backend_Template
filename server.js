@@ -1,14 +1,15 @@
+// Dotenv zur Verwendung von Umgebungsvariablen .env importieren
+require('dotenv').config();
+
 const express = require('express');
 const membersRoute = require('./project-root/src/routes/membersRoutes');
 const addressesRoutes = require('./project-root/src/routes/addressesRoutes');
 const authRoutes = require('./project-root/src/routes/authRoutes');
 const userRoutes = require('./project-root/src/routes/userRoutes');
+const passwordRoutes = require('./project-root/src/routes/passwordRoutes');
 const roleRoutes = require('./project-root/src/routes/roleRoutes');
 const contributionsRoutes = require('./project-root/src/routes/contributionsRoutes');
 const contributionItemsRoutes = require('./project-root/src/routes/contributionItemsRoutes');
-
-// Dotenv zur Verwendung von Umgebungsvariablen .env importieren
-require('dotenv').config();
 
 const app = express();
 
@@ -25,6 +26,7 @@ app.use('/api/v1/members', membersRoute);
 app.use('/api/v1/addresses', addressesRoutes);
 app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/users', userRoutes);
+app.use('/api/v1/password', passwordRoutes);
 app.use('/api/v1/roles', roleRoutes);
 app.use('/api/v1/contributions', contributionsRoutes);
 app.use('/api/v1/contributionItems', contributionItemsRoutes);
