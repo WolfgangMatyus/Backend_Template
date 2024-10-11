@@ -4,6 +4,8 @@ const Address = require('./addresses');
 const ArchivedMember = require('./archivedMembers');
 const Contribution = require('./contributions');
 const ContributionItem = require('./contributionItems');
+const User = require('./user');
+const Role = require('./role');
 
 // 1. Ein Mitglied hat viele Beiträge (One-to-Many Beziehung)
 Member.hasMany(Contribution, { foreignKey: 'member_id' });

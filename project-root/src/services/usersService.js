@@ -1,7 +1,7 @@
 const bcrypt = require('bcryptjs');
 const User = require('../models/user');
 const Role = require('../models/role');
-const Member = require('../models/member'); // Benötigt für Member-Validierung
+const Member = require('../models/members'); // Benötigt für Member-Validierung
 
 // Erstelle einen neuen Benutzer
 const createUserService = async ({ username, email, password, memberId, role_name }) => {

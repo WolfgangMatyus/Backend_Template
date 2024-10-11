@@ -3,10 +3,10 @@ const Address = require('../models/addresses');
 const addressesService = require('../services/addressesService');
 
 const {
-    findMemberById,
+    findMemberById,         // exklusive Addressdaten
     registerMemberService,
     getAllMembersService,
-    getMemberByIdService,
+    getMemberByIdService,   // inklusive Addressdaten
     updateMemberService,
     deleteMemberService,
 } = require('../services/membersService');
@@ -49,7 +49,7 @@ const getAllMembers = async (req, res) => {
     }
 };
 
-// Abrufen eines einzelnen Mitglieds anhand der ID
+// Abrufen eines einzelnen Mitglieds anhand der ID inklusive Addressdaten
 const getMemberById = async (req, res) => {
     const { id } = req.params;
 
