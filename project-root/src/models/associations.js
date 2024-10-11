@@ -17,19 +17,24 @@ ContributionItem.belongsTo(Contribution, { foreignKey: 'contribution_id' });
 ArchivedMember.belongsTo(Member, { foreignKey: 'original_member_id' });
 
 
-// Ein Mitglied gehört zu einer Adresse (belongsTo)
+// 4. Ein Mitglied gehört zu einer Adresse (belongsTo)
 Member.belongsTo(Address, {
     foreignKey: 'address_id',   // Das Feld in der members Tabelle, das auf die address_id verweist
     as: 'address',              // Alias für die Beziehung (dieser wird beim Abrufen verwendet)
 });
 
-// Eine Adresse kann viele Mitglieder haben (optional, falls relevant)
+// 5. Eine Adresse kann viele Mitglieder haben (optional, falls relevant)
 Address.hasMany(Member, {
     foreignKey: 'address_id',
     as: 'members'
 });
 
+// 6. Ein User kann nur eine Rolle haben (One-to-One Beziehung)
+User.belongsTo(Role, { foreignKey: 'role_id', as: 'role' }); 
+
 module.exports = {
     Member,
     Address,
+    User,   
+    Role,
 };

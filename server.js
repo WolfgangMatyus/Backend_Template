@@ -2,6 +2,7 @@
 require('dotenv').config();
 
 const express = require('express');
+const cors = require('cors');
 const membersRoute = require('./project-root/src/routes/membersRoutes');
 const addressesRoutes = require('./project-root/src/routes/addressesRoutes');
 const authRoutes = require('./project-root/src/routes/authRoutes');
@@ -14,6 +15,9 @@ const contributionItemsRoutes = require('./project-root/src/routes/contributionI
 const app = express();
 
 app.use(express.json());
+
+// Erlaubt alle Cross-Origin-Anfragen
+app.use(cors());
 
 // Logging Middleware
 app.use((req, res, next) => {

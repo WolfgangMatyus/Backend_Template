@@ -29,6 +29,14 @@ const User = sequelize.define('User', {
         type: DataTypes.TEXT,
         allowNull: false, // Das Passwort-Hash darf nicht null sein
     },
+    role_id: {  // Verweis auf die Rolle
+        type: DataTypes.UUID,
+        references: {
+            model: 'roles',  // Name der Referenztabelle
+            key: 'id',
+        },
+        onDelete: 'SET NULL',  // Bei Löschung der Rolle bleibt der User bestehen
+    },
     created_at: {
         type: DataTypes.DATE,
         defaultValue: DataTypes.NOW, // Standardwert für das Erstellungsdatum

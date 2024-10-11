@@ -181,19 +181,13 @@ CREATE TABLE roles (
 
 -- Benutzer Tabelle mit UUID
 CREATE TABLE users (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),    -- UUID als Primärschlüssel
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),   -- UUID als Primärschlüssel
     member_id UUID REFERENCES members(id) ON DELETE CASCADE, -- UUID Referenz zu Mitgliedern
+    role_id UUID REFERENCES roles(id) ON DELETE SET NULL,    -- UUID Referenz zur Rolle, da Benutzer nur eine Rolle haben kann
     username VARCHAR(100) UNIQUE,
     email VARCHAR(100) NOT NULL UNIQUE,
     password_hash TEXT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
--- Zwischentabelle für User-Rollen (für flexible Zuweisung von mehreren Rollen an einen User)
-CREATE TABLE user_roles (
-    user_id UUID REFERENCES users(id) ON DELETE CASCADE,  -- UUID Referenz zu Benutzern
-    role_id UUID REFERENCES roles(id) ON DELETE CASCADE,  -- UUID Referenz zu Rollen
-    PRIMARY KEY (user_id, role_id)
 );
 
 -- Rollen einfügen

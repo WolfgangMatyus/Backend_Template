@@ -26,6 +26,9 @@ postgreSQL
 #### jest und Suptertest
     npm install --save-dev jest supertest
 
+#### Cors für Frontend Integration test
+    npm install cors
+
 ### Sicherheit
 
 #### dotenv zur Exklusion von Schlüssel
