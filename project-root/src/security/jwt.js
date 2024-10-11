@@ -1,3 +1,4 @@
+// jwt.js
 const jwt = require('jsonwebtoken');
 
 // Funktion zur Generierung eines JWT

@@ -1,7 +1,7 @@
 const bcrypt = require('bcryptjs');
 const User = require('../models/user');
 const Role = require('../models/role');
-const Member = require('../models/members'); // Benötigt für Member-Validierung
+const Member = require('../models/members');
 
 // Erstelle einen neuen Benutzer
 const createUserService = async ({ username, email, password, memberId, role_name }) => {
@@ -11,12 +11,13 @@ const createUserService = async ({ username, email, password, memberId, role_nam
     }
 
     const password_hash = await bcrypt.hash(password, 10);
+    
+    if (!role_name) {
+        role_name = 'user'; // default User Rolle, kann von Admin später angepasst werden
+    }
 
     // Finde die Rolle anhand des Namens
     const role = await Role.findOne({ where: { role_name } });
-    if (!role) {
-        throw new Error('Rolle nicht gefunden');
-    }
 
     // Erstelle den Benutzer mit der Rolle
     const user = await User.create({
@@ -38,13 +39,16 @@ const createUserService = async ({ username, email, password, memberId, role_nam
 
 // Alle Benutzer abrufen
 const getAllUsersService = async () => {
-    return await User.findAll();
+    return await User.findAll({
+        attributes: { exclude: ['password_hash'] }
+    });
 };
 
 // Benutzer nach ID abrufen
 const getUserByIdService = async (id) => {
     const user = await User.findByPk(id, {
         include: { model: Role, as: 'role' }, // Rolle des Benutzers einbinden
+        attributes: { exclude: ['password_hash'] }
     });
     if (!user) {
         throw new Error('User not found');

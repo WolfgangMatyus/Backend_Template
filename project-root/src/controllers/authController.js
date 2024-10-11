@@ -22,10 +22,12 @@ const login = async (req, res) => {
             return res.status(401).json({ message: 'Invalid credentials' });
         }
 
-        // Generiere JWT Token
-        const token = generateToken(user); // Verwende die Funktion aus jwt.js
+        // Generiere JWT Token und sende user im response
+        const token = generateToken(user);
 
-        res.json({ token }); // Sende den Token als Antwort
+        // Entferne das password_hash-Feld aus dem User-Objekt
+        const { password_hash, ...userWithoutPasswordHash } = user.dataValues;
+        res.json({ token, user: userWithoutPasswordHash });
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Server error' });
