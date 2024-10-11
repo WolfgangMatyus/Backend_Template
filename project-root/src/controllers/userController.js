@@ -6,7 +6,7 @@ const UserRole = require('../models/userRole');
 
 // Benutzer anlegen (Create) und Rolle zuweisen
 const createUser = async (req, res) => {
-    const { name, email, password, memberId } = req.body; // memberId aus dem Body extrahieren
+    const { username, email, password, memberId } = req.body; // memberId aus dem Body extrahieren
 
     try {
         // Überprüfen, ob der Benutzer bereits existiert
@@ -20,7 +20,7 @@ const createUser = async (req, res) => {
 
         // Erstelle den Benutzer
         const user = await User.create({ 
-            name, 
+            username, 
             email, 
             password_hash,
             member_id: memberId // memberId hier setzen

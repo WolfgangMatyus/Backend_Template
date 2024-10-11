@@ -183,6 +183,7 @@ CREATE TABLE roles (
 CREATE TABLE users (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),    -- UUID als Primärschlüssel
     member_id UUID REFERENCES members(id) ON DELETE CASCADE, -- UUID Referenz zu Mitgliedern
+    username VARCHAR(100) UNIQUE,
     email VARCHAR(100) NOT NULL UNIQUE,
     password_hash TEXT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP

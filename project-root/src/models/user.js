@@ -15,6 +15,11 @@ const User = sequelize.define('User', {
         },
         onDelete: 'CASCADE', // Wenn das Mitglied gelöscht wird, wird auch der Benutzer gelöscht
     },
+    username: {
+        type: DataTypes.STRING,
+        allowNull: true,
+        unique: true, // Sicherstellen, dass jeder Username eindeutig ist
+    },
     email: {
         type: DataTypes.STRING,
         allowNull: false,
