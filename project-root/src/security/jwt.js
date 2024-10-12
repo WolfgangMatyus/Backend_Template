@@ -4,9 +4,13 @@ const jwt = require('jsonwebtoken');
 // Funktion zur Generierung eines JWT
 function generateToken(user) {
     return jwt.sign(
-        { id: user.id, email: user.email },
+        { 
+            id: user.id, 
+            email: user.email,
+            role: user.role.role_name
+        },
         process.env.JWT_SECRET, 
-        { expiresIn: '15m' }
+        { expiresIn: '10m' }
     );
 }
 

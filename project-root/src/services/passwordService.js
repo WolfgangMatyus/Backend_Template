@@ -1,11 +1,15 @@
 const bcrypt = require('bcryptjs');
 const User = require('../models/user');
+const Role = require('../models/role');
 const { sendEmail } = require('../utils/email'); // Eine Utility-Funktion, die E-Mails sendet
 const { generateToken, verifyToken } = require('../security/jwt'); // Verwende deine bestehende JWT-Funktionen
 
 const PasswordService = {
     async sendResetLink(email) {
-        const user = await User.findOne({ where: { email } });
+        const user = await User.findOne({ 
+            where: { email },
+            include: [{ model: Role, as: 'role' }], 
+        });
         if (!user) {
             throw new Error('Benutzer nicht gefunden');
         }
