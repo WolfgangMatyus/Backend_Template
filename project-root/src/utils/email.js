@@ -27,8 +27,13 @@ const sendEmail = async (to, resetLink) => {
         from: process.env.EMAIL_FROM, // Absender-E-Mail-Adresse
         to: to, // Empfänger
         subject: 'Passwort zurücksetzen',
-        text: `Bitte klicken Sie auf den folgenden Link, um Ihr Passwort zurückzusetzen: ${resetLink}`, // Text für die E-Mail
-        html: `<p>Bitte klicken Sie auf den folgenden Link, um Ihr Passwort zurückzusetzen:</p><p><a href="${resetLink}">${resetLink}</a></p>`, // HTML für die E-Mail
+        html: `
+            <p>Hallo,</p>
+            <p>Um Ihr Passwort zurückzusetzen, klicken Sie bitte auf den folgenden Link:</p>
+            <p><a href="${resetLink}">Passwort zurücksetzen</a></p>
+            <p>Wenn Sie diese Anfrage nicht gestellt haben, können Sie diese E-Mail ignorieren.</p>
+            <p>Vielen Dank!</p>
+            `
     };
 
     try {
