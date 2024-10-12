@@ -14,6 +14,10 @@ const Role = sequelize.define('Role', {
         allowNull: false,
         unique: true, // Jede Rolle hat einen eindeutigen Namen
     },
+    parent_id: {
+        type: DataTypes.UUID,
+        defaultValue: DataTypes.UUIDV4,
+    }
 }, {
     tableName: 'roles',
     timestamps: false,

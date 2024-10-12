@@ -1,8 +1,10 @@
 const express = require('express');
+const { authenticateToken } = require('../middlewares/authMiddleware')
+const { authorizeRoles } = require('../security/permission');
 const {
     createUser,
     getAllUsers,
-    getUserById,  // Hinzugefügt
+    getUserById,
     updateUser,
     deleteUser,
 } = require('../controllers/usersController');
@@ -13,15 +15,15 @@ const router = express.Router();
 router.post('/', createUser);
 
 // Alle Benutzer abrufen
-router.get('/', getAllUsers);
+router.get('/', authenticateToken, authorizeRoles('admin'), getAllUsers);
 
 // Einzelnen Benutzer abrufen (neu hinzugefügt)
-router.get('/:id', getUserById);
+router.get('/:id', authenticateToken, authorizeRoles('user'), getUserById);
 
 // Benutzer aktualisieren
-router.put('/:id', updateUser);
+router.put('/:id', authenticateToken, authorizeRoles('user'), updateUser);
 
 // Benutzer löschen
-router.delete('/:id', deleteUser);
+router.delete('/:id', authenticateToken, authorizeRoles('admin'), deleteUser);
 
 module.exports = router;
