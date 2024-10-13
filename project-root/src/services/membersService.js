@@ -56,6 +56,7 @@ const findMemberById = async (id) => {
     return await Member.findByPk(id);
 };
 
+
 // Mitglied aktualisieren
 const updateMemberService = async (id, memberData) => {
     const { first_name, last_name, date_of_birth, gender, member_since, guardian_name, guardian_contact, email, phone, nationality, address_id, } = memberData;

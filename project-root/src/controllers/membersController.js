@@ -7,6 +7,7 @@ const {
     registerMemberService,
     getAllMembersService,
     getMemberByIdService,   // inklusive Addressdaten
+    getMemberByUserIdService,
     updateMemberService,
     deleteMemberService,
 } = require('../services/membersService');
