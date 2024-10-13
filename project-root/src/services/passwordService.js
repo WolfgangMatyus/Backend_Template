@@ -15,7 +15,7 @@ const PasswordService = {
         }
 
         const token = generateToken(user); // Token generieren
-        const resetLink = `http://localhost:8081/resetPassword?token=${token}`;
+        const resetLink = `http://localhost:8080/reset/${token}`;
 
         // Sende E-Mail mit dem Link
         await sendEmail(user.email, resetLink);
