@@ -25,8 +25,10 @@ postgreSQL
     npm install pdfkit
 #### jest und Suptertest
     npm install --save-dev jest supertest
+#### multer sharp für bildbearbeitung
+    npm install multer sharp
 
-#### Cors für Frontend Integration test
+#### Cors für Frontend Integration test und Serverübergreifenden Zugriff
     npm install cors
 
 ### Sicherheit

@@ -37,73 +37,50 @@ VALUES ('Calvigasse', '4', '1', '26', '1230', 'Wien', 'Österreich')
 INSERT INTO club_info (club_name, web_address, email, phone_trainer, phone_office, address_id, iban, bic, logo_path)
 VALUES ('UJC Sakura Yanagi JUDO', 'http://www.sakura-yanagi-judo.at', 'office@sakura-yanagi-judo.at', '+43 (0) 676 / 775 89 14', '+43 (0) 676 / 461 88 83', address_id_just_created, 'AT12 3288 0000 0246 9161', 'RLNWATW1880', '/path/to/sakura-yanagi-judo_logo.png');
 
--- Mitglieder Tabelle 
-CREATE TABLE members (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),           -- UUID als Primärschlüssel
-    status VARCHAR(20) DEFAULT 'active',                      -- Status ('active', 'inactive', 'archived')
-    member_since DATE NOT NULL DEFAULT CURRENT_DATE,         -- Mitglied seit (Datum)
-    first_name VARCHAR(50) NOT NULL,                          -- Vorname des Mitglieds
-    last_name VARCHAR(50) NOT NULL,                           -- Nachname des Mitglieds
-    gender VARCHAR(20) NOT NULL,
-    date_of_birth DATE NOT NULL,                              -- Geburtsdatum
-    address_id UUID REFERENCES addresses(id) ON DELETE SET NULL, -- Fremdschlüssel auf die Adressen-Tabelle
-    email VARCHAR(100) NOT NULL UNIQUE,                       -- E-Mail-Adresse (eindeutig)
-    phone VARCHAR(20),                                        -- Telefonnummer
-    nationality VARCHAR(50),                                  -- Nationalität
-    profile_photo TEXT,                                       -- Pfad zum Profilfoto
-    guardian_contact VARCHAR(100),
-    guardian_name VARCHAR(100),                               -- Name des Erziehungsberechtigten
-    "createdAt" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,            -- Erstellungsdatum
-    "updatedAt" TIMESTAMP DEFAULT CURRENT_TIMESTAMP             -- Aktualisierungsdatum
+CREATE TABLE member_roles (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),           			-- UUID als Primärschlüssel
+    role VARCHAR(50) DEFAULT 'Judoka',                        			-- Rolle des Mitglieds ('Judoka', 'Trainingsassistent', 'Übungsleiter', 'Trainer', 'Funktionär')
+    certification_level VARCHAR(50),                          			-- Ausbildungsgrad (z.B. Trainerlizenz)
+    hours_worked DECIMAL(5, 2) DEFAULT 0,                     			-- Geleistete Stunden
+    attendance_count INTEGER DEFAULT 0,                       			-- Anzahl der Anwesenheiten
+    tax_free_compensation_limit DECIMAL(10, 2) DEFAULT 2400.00,			-- Steuerfreier Maximalbetrag
+    additional_allowances DECIMAL(10, 2) DEFAULT 0,           			-- Sachleistungen oder zusätzliche Vergütungen
+    budget DECIMAL(10, 2) DEFAULT 0,                          			-- Verfügbares Budget für Aufwandsentschädigung
+    "createdAt" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,          			-- Erstellungsdatum
+    "updatedAt" TIMESTAMP DEFAULT CURRENT_TIMESTAMP           			-- Aktualisierungsdatum
 );
 
--- Angenommene Adress-ID für die Testdaten (bitte diese Werte in der tatsächlichen Anwendung entsprechend anpassen)
-WITH inserted_addresses AS (
-    INSERT INTO addresses (street, house_number, stair, door_number, postal_code, city, country)
-    VALUES
-        ('Musterstraße', '1', NULL, NULL, '1234', 'Wien', 'Österreich'),
-        ('Beispielweg', '10', NULL, NULL, '5678', 'Graz', 'Österreich'),
-        ('Testgasse', '42', NULL, NULL, '91011', 'Innsbruck', 'Österreich'),
-        ('Beispielfeld', '5', 'A', '1', '1213', 'Salzburg', 'Österreich')
-    RETURNING id
-)
-
--- Füge die Mitglieder in die members-Tabelle ein
-INSERT INTO members (first_name, last_name, gender, date_of_birth, address_id, email, phone, nationality, profile_photo, status, member_since, guardian_name, guardian_contact)
-VALUES
-    ('Max', 'Mustermann', 'M', '1990-01-01', (SELECT id FROM inserted_addresses LIMIT 1), 'max.mustermann@example.com', '+43 676 1234567', 'Österreich', '/path/to/max_profile_photo.png', 'active', CURRENT_DATE, 'Erika Mustermann', '+43 676 7654321'),
-    ('Eva', 'Musterfrau', 'F', '1992-02-02', (SELECT id FROM inserted_addresses OFFSET 1 LIMIT 1), 'eva.musterfrau@example.com', '+43 676 2345678', 'Österreich', '/path/to/eva_profile_photo.png', 'active', CURRENT_DATE, 'Hans Muster', '+43 676 8765432'),
-    ('John', 'Doe', 'M', '1985-03-03', (SELECT id FROM inserted_addresses OFFSET 2 LIMIT 1), 'john.doe@example.com', '+43 676 3456789', 'Österreich', '/path/to/john_profile_photo.png', 'active', CURRENT_DATE, 'Jane Doe', '+43 676 9876543'),
-    ('Jane', 'Doe', 'F', '1988-04-04', (SELECT id FROM inserted_addresses OFFSET 3 LIMIT 1), 'jane.doe@example.com', '+43 676 4567890', 'Österreich', '/path/to/jane_profile_photo.png', 'active', CURRENT_DATE, 'John Doe', '+43 676 6543210');
-
-
-
--- Archivierte Mitglieder Tabelle mit UUID
-CREATE TABLE archived_members (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),    -- UUID als Primärschlüssel
-    original_member_id UUID,                           -- UUID Referenz zum Originalmitglied
-    first_name VARCHAR(50),
-    last_name VARCHAR(50),
-    date_of_birth DATE,
-    address VARCHAR(255),
-    postal_code VARCHAR(10),
-    city VARCHAR(50),
-    email VARCHAR(100),
-    phone VARCHAR(20),
-    nationality VARCHAR(50),
-    profile_photo TEXT,
-    "archivedAt" TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+-- Mitglieder Tabelle 
+CREATE TABLE members (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),           			-- UUID als Primärschlüssel
+    status VARCHAR(20) DEFAULT 'active',					  			-- Status ('active', 'inactive', 'archived', 'offen')
+    address_id UUID REFERENCES addresses(id) ON DELETE SET NULL, 		-- Fremdschlüssel auf die Adressen-Tabelle
+	member_role_id UUID REFERENCES member_roles(id) ON DELETE SET NULL,	-- Fremdschlüssel auf die Mitglieder-Tabelle
+	is_sibling_from UUID REFERENCES members(id) ON DELETE SET NULL,		-- Geschwister Rabatt ab dem 2. Kind	
+	member_since DATE NOT NULL DEFAULT CURRENT_DATE,          			-- Mitglied seit (Datum)
+    first_name VARCHAR(50) NOT NULL,                          			-- Vorname des Mitglieds
+    last_name VARCHAR(50) NOT NULL,                           			-- Nachname des Mitglieds
+    gender VARCHAR(20) NOT NULL,                              			-- Geschlecht
+    date_of_birth DATE NOT NULL,                              			-- Geburtsdatum
+    email VARCHAR(100) NOT NULL UNIQUE,                       			-- E-Mail-Adresse (eindeutig)
+    phone VARCHAR(20),                                        			-- Telefonnummer
+    nationality VARCHAR(50),                                  			-- Nationalität
+    profile_photo TEXT,                                       			-- Pfad zum Profilfoto
+    guardian_contact VARCHAR(100),                            			-- Kontaktinformationen des Erziehungsberechtigten
+    guardian_name VARCHAR(100),                               			-- Name des Erziehungsberechtigten			
+    "createdAt" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,          			-- Erstellungsdatum
+    "updatedAt" TIMESTAMP DEFAULT CURRENT_TIMESTAMP           			-- Aktualisierungsdatum
 );
 
 -- Tabelle contributions erstellen
 CREATE TABLE contributions (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),     -- UUID als Primärschlüssel
-    member_id UUID REFERENCES members(id),              -- UUID Referenz zu Mitgliedern
-    semester VARCHAR(20) NOT NULL,                      -- Semester (z.B. "Sommersemester")
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),       -- UUID als Primärschlüssel
+    member_id UUID REFERENCES members(id),                -- UUID Referenz zu Mitgliedern
+    semester VARCHAR(20) NOT NULL,                        -- Semester (z.B. "Sommersemester")
     year INTEGER DEFAULT EXTRACT(YEAR FROM CURRENT_DATE), --  2024
-    total_amount DECIMAL(10, 2) NOT NULL,               -- Gesamter Betrag der Vorschreibung
-    due_date DATE NOT NULL,                             -- Fälligkeitsdatum
-    status VARCHAR(20) DEFAULT 'pending',               -- 'pending', 'paid', 'inactive'
+    total_amount DECIMAL(10, 2) NOT NULL,                 -- Gesamter Betrag der Vorschreibung
+    due_date DATE NOT NULL,                               -- Fälligkeitsdatum
+    status VARCHAR(20) DEFAULT 'pending',                 -- 'pending', 'paid', 'inactive'
     "createdAt" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,      -- Erstellungsdatum
     "updatedAt" TIMESTAMP DEFAULT CURRENT_TIMESTAMP       -- Aktualisierungsdatum
 );
@@ -112,7 +89,7 @@ CREATE TABLE contributions (
 CREATE OR REPLACE FUNCTION update_updated_at_column()
 RETURNS TRIGGER AS $$
 BEGIN
-    NEW.updatedAt = CURRENT_TIMESTAMP;  -- Setze updatedAt auf die aktuelle Zeit
+    NEW.updatedAt = CURRENT_TIMESTAMP;      -- Setze updatedAt auf die aktuelle Zeit
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
@@ -125,13 +102,13 @@ EXECUTE FUNCTION update_updated_at_column();
 
 -- Tabelle contribution_items erstellen
 CREATE TABLE contribution_items (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),     -- UUID als Primärschlüssel
-    contribution_id UUID REFERENCES contributions(id) ON DELETE CASCADE,  -- Beitrag (Vorschreibung) Referenz
-    description VARCHAR(255) NOT NULL,                  -- Bezeichnung der Posten (z.B. Mitgliedsbeitrag, Kursgebühr)
-    quantity INT NOT NULL DEFAULT 1,                    -- Anzahl der Positionen
-    amount DECIMAL(10, 2) NOT NULL,                      -- Betrag für die jeweilige Position
-    "createdAt" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,      -- Erstellungsdatum
-    "updatedAt" TIMESTAMP DEFAULT CURRENT_TIMESTAMP       -- Aktualisierungsdatum
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),                         -- UUID als Primärschlüssel
+    contribution_id UUID REFERENCES contributions(id) ON DELETE CASCADE,    -- Beitrag (Vorschreibung) Referenz
+    description VARCHAR(255) NOT NULL,                                      -- Bezeichnung der Posten (z.B. Mitgliedsbeitrag, Kursgebühr)
+    quantity INT NOT NULL DEFAULT 1,                                        -- Anzahl der Positionen
+    amount DECIMAL(10, 2) NOT NULL,                                         -- Betrag für die jeweilige Position
+    "createdAt" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,                        -- Erstellungsdatum
+    "updatedAt" TIMESTAMP DEFAULT CURRENT_TIMESTAMP                         -- Aktualisierungsdatum
 );
 
 -- Trigger für contribution_items
@@ -142,34 +119,39 @@ EXECUTE FUNCTION update_updated_at_column();
 
 -- Blog Posts Tabelle mit UUID
 CREATE TABLE blog_posts (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),    -- UUID als Primärschlüssel
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),     -- UUID als Primärschlüssel
     title VARCHAR(255) NOT NULL,
     description TEXT NOT NULL,
     date DATE NOT NULL,
     location VARCHAR(255),
-    images TEXT[],                                    -- Array of image URLs/paths
+    images TEXT[],                                      -- Array of image URLs/paths
     "createdAt" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Anwesenheitsaufzeichnungen Tabelle mit UUID
-CREATE TABLE attendance_records (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),    -- UUID als Primärschlüssel
-    member_id UUID REFERENCES members(id),             -- UUID Referenz zu Mitgliedern
-    date_of_attendance DATE NOT NULL,
-    status VARCHAR(20) DEFAULT 'present',  -- 'present', 'absent', 'excused', 'inactive'
-    createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+CREATE TABLE events (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),         			            -- Eindeutige ID
+    date DATE NOT NULL,                                                             -- Datum des Trainings oder Events
+    duration Time,                                     			                    -- 
+    type VARCHAR(20) NOT NULL CHECK (type IN ('Training', 'Event', 'Sitzung')),  	-- Typ: 'Training' oder 'Event'
+    location VARCHAR(255) NOT NULL,                         			            -- Ort des Trainings oder Events
+    organizer VARCHAR(255) NOT NULL,                        			            -- Veranstalter
+    description TEXT,                                       			            -- Beschreibung
+    costs DECIMAL(10, 2) DEFAULT 0,                         			            -- Kosten (falls Event, Standard 0)
+    results TEXT,                                           			            -- Ergebnisse (optional)
+    "createdAt" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,        			            -- Erstellungsdatum
+    "updatedAt" TIMESTAMP DEFAULT CURRENT_TIMESTAMP         			            -- Aktualisierungsdatum
 );
 
--- Archivierte Anwesenheitsaufzeichnungen Tabelle mit UUID
-CREATE TABLE archived_attendance_records (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),    -- UUID als Primärschlüssel
-    original_attendance_id UUID,                       -- UUID Referenz zur Originalanwesensheit
-    member_id UUID,                                    -- UUID Referenz zu Mitgliedern
-    date_of_attendance DATE,
-    original_status VARCHAR(20),
-    archived_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+-- Anwesenheitsaufzeichnungen Tabelle mit UUID
+CREATE TABLE attendance (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),     				-- UUID als Primärschlüssel
+    member_id UUID REFERENCES members(id),              				-- UUID Referenz zu Mitgliedern
+    event_id UUID REFERENCES events(id),								-- UUID Referenz zu Events
+    is_present BOOLEAN DEFAULT FALSE,                   				-- Boolean-Wert für Anwesenheit (TRUE = anwesend, FALSE = nicht anwesend)
+    notes TEXT,															-- Notizen
+    createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Rollen Tabelle mit UUID und Hierarchie
@@ -181,9 +163,9 @@ CREATE TABLE roles (
 
 -- Benutzer Tabelle mit UUID
 CREATE TABLE users (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),   -- UUID als Primärschlüssel
-    member_id UUID REFERENCES members(id) ON DELETE CASCADE, -- UUID Referenz zu Mitgliedern
-    role_id UUID REFERENCES roles(id) ON DELETE SET NULL,    -- UUID Referenz zur Rolle, da Benutzer nur eine Rolle haben kann
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),             -- UUID als Primärschlüssel
+    member_id UUID REFERENCES members(id) ON DELETE CASCADE,    -- UUID Referenz zu Mitgliedern
+    role_id UUID REFERENCES roles(id) ON DELETE SET NULL,       -- UUID Referenz zur Rolle, da Benutzer nur eine Rolle haben kann
     username VARCHAR(100) UNIQUE,
     email VARCHAR(100) NOT NULL UNIQUE,
     password_hash TEXT NOT NULL,
@@ -195,33 +177,3 @@ INSERT INTO roles (id, role_name, parent_id) VALUES (uuid_generate_v4(), 'user',
 INSERT INTO roles (id, role_name, parent_id) VALUES (uuid_generate_v4(), 'trainer', (SELECT id FROM roles WHERE role_name='user'));
 INSERT INTO roles (id, role_name, parent_id) VALUES (uuid_generate_v4(), 'official', (SELECT id FROM roles WHERE role_name='trainer'));
 INSERT INTO roles (id, role_name, parent_id) VALUES (uuid_generate_v4(), 'admin', NULL);
-
-
--- Trigger-Funktion zum aktivieren, deaktivieren und archivieren von Mitgliedern und Anwesenheitsdaten
-
-CREATE OR REPLACE FUNCTION handle_member_status_change() RETURNS TRIGGER AS $$
-BEGIN
-    -- Wenn Mitglied auf 'inactive' gesetzt wird
-    IF (OLD.status = 'active' AND NEW.status = 'inactive') THEN
-        UPDATE attendance_records
-        SET status = 'inactive', updated_at = CURRENT_TIMESTAMP
-        WHERE member_id = OLD.id AND status != 'inactive';
-    
-    -- Wenn Mitglied wieder 'active' wird
-    ELSIF (OLD.status = 'inactive' AND NEW.status = 'active') THEN
-        UPDATE attendance_records
-        SET status = 'active', updated_at = CURRENT_TIMESTAMP
-        WHERE member_id = OLD.id AND status != 'active';
-    END IF;
-
-    RETURN NEW;
-END;
-$$ LANGUAGE plpgsql;
-
--- Trigger für das Archivieren
-
-CREATE TRIGGER member_status_update
-BEFORE UPDATE OF status ON members
-FOR EACH ROW
-WHEN (OLD.status = 'active' AND NEW.status = 'inactive')
-EXECUTE FUNCTION handle_member_status_change();
