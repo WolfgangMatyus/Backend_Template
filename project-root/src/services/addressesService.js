@@ -3,7 +3,7 @@ const Address = require('../models/addresses');
 
 // Erstellen einer neuen Adresse
 const createAddress = async (addressData) => {
-    console.log('Service: ', addressData);
+    // console.log('Service: ', addressData);
     if (!addressData || !addressData.street) {
         throw new Error('Fehlende Adressdaten im Service');
     }

@@ -20,9 +20,15 @@ const registerMember = async (memberData, addressData, judoSpecificsData) => {
         });
 
         // Judo-spezifische Daten erstellen
+        const defaultDate = new Date(); 
         const judoSpecifics = await JudoSpecifics.create({
             ...judoSpecificsData,
             member_id: member.id,
+            // Defaultwerte eintragen
+            medical_certificate_date: judoSpecificsData.medical_certificate_date || defaultDate,
+            kyu_book_date: judoSpecificsData.kyu_book_date || defaultDate,
+            training_date: judoSpecificsData.training_date || defaultDate,
+            last_judocard: judoSpecificsData.last_judocard || defaultDate,
         });
 
         return { member, judoSpecifics };

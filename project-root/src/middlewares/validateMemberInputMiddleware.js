@@ -1,24 +1,34 @@
-// validateMemberInputMiddleware
 const isValidEmail = (email) => {
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; // Einfaches Regex zur Überprüfung von E-Mail-Adressen
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   return emailRegex.test(email);
+};
+
+const isValidPhoneNumber = (phone) => {
+  const phoneRegex = /^\+?[0-9]{7,15}$/;
+  return phoneRegex.test(phone);
+};
+
+const isValidDate = (dateString) => {
+  const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+  return dateRegex.test(dateString) && !isNaN(new Date(dateString).getTime());
 };
 
 const validateMemberInput = (req, res, next) => {
   const {
-    first_name,
-    last_name,
-    date_of_birth,
-    member_since,
-    guardian_name,
-    guardian_contact,
-    email,
-    phone,
+      first_name,
+      last_name,
+      date_of_birth,
+      member_since,
+      guardian_name,
+      guardian_contact,
+      email,
+      phone,
   } = req.body;
 
-  const missingFields = []; // Array für fehlende Felder
+  const missingFields = [];
+  const errors = [];
 
-  // Überprüfe, ob die erforderlichen Felder ausgefüllt sind und füge fehlende Felder zum Array hinzu
+  // Überprüfe auf fehlende Pflichtfelder
   if (!first_name) missingFields.push('first_name');
   if (!last_name) missingFields.push('last_name');
   if (!date_of_birth) missingFields.push('date_of_birth');
@@ -28,19 +38,31 @@ const validateMemberInput = (req, res, next) => {
   if (!email) missingFields.push('email');
   if (!phone) missingFields.push('phone');
 
-  // Wenn es fehlende Felder gibt, gib eine detaillierte Fehlermeldung zurück
+  // Füge Fehler für fehlende Felder hinzu
   if (missingFields.length > 0) {
-      return res.status(400).json({
-          message: 'Bitte füllen Sie die folgenden Pflichtfelder aus: ' + missingFields.join(', ')
-      });
+      errors.push('Fehlende Pflichtfelder: ' + missingFields.join(', '));
   }
 
-  // Hier könnten weitere spezifische Validierungen erfolgen (z.B. Email)
+  // Füge spezifische Validierungen hinzu
   if (!isValidEmail(email)) {
-      return res.status(400).json({ message: 'Bitte geben Sie eine gültige E-Mail-Adresse ein.' });
+      errors.push('Ungültige E-Mail-Adresse.');
+  }
+  if (!isValidPhoneNumber(phone)) {
+      errors.push('Ungültige Telefonnummer.');
+  }
+  if (!isValidDate(date_of_birth)) {
+      errors.push('Ungültiges Geburtsdatum.');
+  }
+  if (!isValidDate(member_since)) {
+      errors.push('Ungültiges Mitgliedsdatum.');
   }
 
-  next(); // Weiter zur nächsten Middleware oder Route
+  // Rückgabe der Fehler, falls vorhanden
+  if (errors.length > 0) {
+      return res.status(400).json({ message: errors.join(' ') });
+  }
+
+  next();
 };
 
 module.exports = { validateMemberInput };

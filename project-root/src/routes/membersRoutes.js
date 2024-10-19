@@ -1,7 +1,7 @@
 // membersRoutes.js
 const express = require('express');
 const multer = require('multer');
-const upload = multer({ dest: 'uploads/profile_pictures' });
+//const upload = multer({ dest: 'uploads/profile_pictures' });
 const {
   registerMember,
   getAllMembers,

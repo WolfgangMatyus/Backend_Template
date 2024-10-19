@@ -4,6 +4,7 @@ const JudoSpecifics = require('../models/judoSpecifics');
 const membersService = require('../services/membersService');
 
 const registerMember = async (req, res) => {
+    console.log(req.body);
     const { addresses, judoSpecifics  } = req.body;
     const memberData =  { member_since, first_name, last_name, date_of_birth, email, phone, guardian_name, guardian_contact, profile_photo } = req.body;
 
