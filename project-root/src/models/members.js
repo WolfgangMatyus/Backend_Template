@@ -20,10 +20,6 @@ const Member = sequelize.define('Member', {
         type: DataTypes.DATEONLY,
         allowNull: false,
     },
-    gender: {  // Neues Feld für das Geschlecht
-        type: DataTypes.STRING,
-        allowNull: false,
-    },
     member_since: { // Neues Feld für "Mitglied seit"
         type: DataTypes.DATEONLY,
         allowNull: false,
@@ -43,10 +39,6 @@ const Member = sequelize.define('Member', {
         unique: true,
     },
     phone: {
-        type: DataTypes.STRING,
-        allowNull: true,
-    },
-    nationality: {
         type: DataTypes.STRING,
         allowNull: true,
     },

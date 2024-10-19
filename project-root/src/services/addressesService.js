@@ -1,6 +1,15 @@
 // addressesService.js
 const Address = require('../models/addresses');
 
+// Erstellen einer neuen Adresse
+const createAddress = async (addressData) => {
+    console.log('Service: ', addressData);
+    if (!addressData || !addressData.street) {
+        throw new Error('Fehlende Adressdaten im Service');
+    }
+    return await Address.create(addressData);
+};
+
 // Holen aller Adressen
 const getAllAddresses = async () => {
     return await Address.findAll();
@@ -13,6 +22,10 @@ const getAddressById = async (id) => {
 
 // Funktion zum Überprüfen, ob eine Adresse bereits existiert
 const findAddressByDetails = async (addressData) => {
+    if (!addressData || !addressData.street) {
+        throw new Error('Adressdaten oder Straßenangaben fehlen');
+    }
+
     return await Address.findOne({
         where: {
             street: addressData.street,
@@ -24,16 +37,11 @@ const findAddressByDetails = async (addressData) => {
     });
 };
 
-// Erstellen einer neuen Adresse
-const createAddress = async (addressData) => {
-    return await Address.create(addressData);
-};
-
 // Aktualisieren einer Adresse
 const updateAddress = async (id, addressData) => {
     const address = await Address.findByPk(id);
     if (!address) {
-        return null;
+        throw new Error('Adresse nicht gefunden');
     }
     return await address.update(addressData);
 };

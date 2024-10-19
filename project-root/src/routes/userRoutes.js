@@ -1,5 +1,6 @@
 const express = require('express');
 const { authenticateToken } = require('../middlewares/authMiddleware')
+const { validateUserInput } = require('../middlewares/validateUserInputMiddleware')
 const { authorizeRoles } = require('../security/permission');
 const {
     createUser,
@@ -12,7 +13,7 @@ const {
 const router = express.Router();
 
 // Benutzer anlegen
-router.post('/', createUser);
+router.post('/', validateUserInput, createUser);
 
 // Alle Benutzer abrufen
 router.get('/', authenticateToken, authorizeRoles('admin'), getAllUsers);

@@ -30,7 +30,7 @@ CREATE TABLE club_info (
 
 -- Füge eine Adresse in die addresses-Tabelle ein
 INSERT INTO addresses (street, house_number, stair, door_number, postal_code, city, country)
-VALUES ('Calvigasse', '4', '1', '26', '1230', 'Wien', 'Österreich')
+VALUES ('Calvigasse', '4', '1', '26', '1230', 'Wien', 'Österreich');
 
 -- via Postmann die AddressID auslesen für die Verknüpfung mit Vereinsinformationen
 -- Füge die Vereinsinformationen hinzu
@@ -60,16 +60,35 @@ CREATE TABLE members (
 	member_since DATE NOT NULL DEFAULT CURRENT_DATE,          			-- Mitglied seit (Datum)
     first_name VARCHAR(50) NOT NULL,                          			-- Vorname des Mitglieds
     last_name VARCHAR(50) NOT NULL,                           			-- Nachname des Mitglieds
-    gender VARCHAR(20) NOT NULL,                              			-- Geschlecht
     date_of_birth DATE NOT NULL,                              			-- Geburtsdatum
     email VARCHAR(100) NOT NULL UNIQUE,                       			-- E-Mail-Adresse (eindeutig)
     phone VARCHAR(20),                                        			-- Telefonnummer
-    nationality VARCHAR(50),                                  			-- Nationalität
     profile_photo TEXT,                                       			-- Pfad zum Profilfoto
     guardian_contact VARCHAR(100),                            			-- Kontaktinformationen des Erziehungsberechtigten
     guardian_name VARCHAR(100),                               			-- Name des Erziehungsberechtigten			
     "createdAt" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,          			-- Erstellungsdatum
     "updatedAt" TIMESTAMP DEFAULT CURRENT_TIMESTAMP           			-- Aktualisierungsdatum
+);
+
+CREATE TABLE judo_specifics (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),            -- Primärschlüssel
+    member_id UUID REFERENCES members(id) ON DELETE CASCADE,   -- Fremdschlüssel zur members-Tabelle (1:1 Beziehung)
+    jama_id VARCHAR(50),                                       -- JAMA-ID
+    nationality VARCHAR(50) NOT NULL,                          -- Nationalität
+    gender VARCHAR(20) NOT NULL,                               -- Geschlecht (m/w)
+    age_group VARCHAR(20),                                     -- Altersklasse (U8, U10, ...)
+    max_fight_time VARCHAR(10),                                -- Maximale Kampfzeit (z.B. 2 min, 3 min, 4 min)
+    weight_class VARCHAR(50),                                  -- Gewichtsklasse
+    judogi_size NUMERIC(3),                                    -- Judogi Konfektionsgröße
+    belt_size NUMERIC(3),                                      -- Gürtellänge
+    last_judocard DATE,                                        -- Letzte Judocard (Datum)
+    max_training_level VARCHAR(50),                            -- Maximaler Ausbildungsgrad (z.B. 11.KYU weiss, 1.DAN schwarz)
+    training_date DATE,                                        -- Ausbildungsdatum
+    medical_certificate_date DATE,                             -- Attestdatum
+    kyu_book_date DATE,                                        -- Kyuheft am (Datum)
+    certificate_status VARCHAR(50),                            -- Urkundenstatus ('ausständig', '')
+    "createdAt" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,           -- Erstellungsdatum
+    "updatedAt" TIMESTAMP DEFAULT CURRENT_TIMESTAMP            -- Aktualisierungsdatum
 );
 
 -- Tabelle contributions erstellen

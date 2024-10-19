@@ -12,7 +12,7 @@ const Role = sequelize.define('Role', {
     role_name: {
         type: DataTypes.STRING(50),
         allowNull: false,
-        unique: true, // Jede Rolle hat einen eindeutigen Namen
+        unique: true,
     },
     parent_id: {
         type: DataTypes.UUID,

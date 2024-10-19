@@ -1,6 +1,18 @@
 // addressesController.js
 const addressService = require('../services/addressesService');
 
+// Erstellen einer neuen Adresse
+const createAddress = async (req, res) => {
+    const { street, house_number, stair, door_number, postal_code, city, country } = req.body;
+    try {
+        const newAddress = await addressService.createAddress({ street, house_number, stair, door_number, postal_code, city, country });
+        res.status(201).json(newAddress);
+    } catch (error) {
+        console.error('Fehler beim Erstellen der Adresse:', error);
+        res.status(500).json({ message: 'Fehler beim Erstellen der Adresse' });
+    }
+};
+
 // Holen aller Adressen
 const getAllAddresses = async (req, res) => {
     try {
@@ -24,18 +36,6 @@ const getAddressById = async (req, res) => {
     } catch (error) {
         console.error('Fehler beim Abrufen der Adresse:', error);
         res.status(500).json({ message: 'Fehler beim Abrufen der Adresse' });
-    }
-};
-
-// Erstellen einer neuen Adresse
-const createAddress = async (req, res) => {
-    const { street, house_number, stair, door_number, postal_code, city, country } = req.body;
-    try {
-        const newAddress = await addressService.createAddress({ street, house_number, stair, door_number, postal_code, city, country });
-        res.status(201).json(newAddress);
-    } catch (error) {
-        console.error('Fehler beim Erstellen der Adresse:', error);
-        res.status(500).json({ message: 'Fehler beim Erstellen der Adresse' });
     }
 };
 
@@ -71,9 +71,9 @@ const deleteAddress = async (req, res) => {
 };
 
 module.exports = {
+    createAddress,
     getAllAddresses,
     getAddressById,
-    createAddress,
     updateAddress,
     deleteAddress
 };

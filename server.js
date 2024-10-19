@@ -10,6 +10,7 @@ const userRoutes = require('./project-root/src/routes/userRoutes');
 const passwordRoutes = require('./project-root/src/routes/passwordRoutes');
 const contributionsRoutes = require('./project-root/src/routes/contributionsRoutes');
 const contributionItemsRoutes = require('./project-root/src/routes/contributionItemsRoutes');
+const judoSpecificsRoutes = require('./project-root/src/routes/judoSpecificsRoutes');
 
 const app = express();
 
@@ -32,6 +33,7 @@ app.use('/api/v1/users', userRoutes);
 app.use('/api/v1/password', passwordRoutes);
 app.use('/api/v1/contributions', contributionsRoutes);
 app.use('/api/v1/contributionItems', contributionItemsRoutes);
+app.use('/api/v1/judo-specifics', judoSpecificsRoutes);
 
 // Fehlerbehandlung Middleware
 app.use((err, req, res, next) => {
