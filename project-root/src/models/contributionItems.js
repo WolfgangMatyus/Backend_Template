@@ -1,38 +1,31 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/database');
-const contribution = require('./contributions');
 
+// Definiere das ContributionItem Modell
 const ContributionItem = sequelize.define('contributionItems', {
     id: {
         type: DataTypes.UUID,
         defaultValue: DataTypes.UUIDV4,
         primaryKey: true,
     },
-    contribution_id: {
-        type: DataTypes.UUID,
-        references: {
-            model: contribution,
-            key: 'id',
-        },
-        allowNull: false,
-        onDelete: 'CASCADE',  // Wenn eine Contribution gelöscht wird, werden die zugehörigen Items auch gelöscht
-    },
     description: {
         type: DataTypes.STRING,
         allowNull: false,
+        comment: 'Bezeichnung des Beitragsitems, z.B. Mitgliedsbeitrag, Judocard',
     },
-    quantity: {
-        type: DataTypes.INTEGER,
-        defaultValue: 1,
-        allowNull: false,
-    },
-    amount: {
+    member_price: {
         type: DataTypes.DECIMAL(10, 2),
         allowNull: false,
+        comment: 'Mitgliederpreis für die jeweilige Position',
+    },
+    club_price: {
+        type: DataTypes.DECIMAL(10, 2),
+        allowNull: false,
+        comment: 'Vereinspreis für die jeweilige Position',
     },
 }, {
-    tableName: 'contribution_items',
-    timestamps: true,
+    tableName: 'contribution_items',  // Definiert den Tabellenname in der Datenbank
+    timestamps: true,                 // createdAt und updatedAt Felder automatisch handhaben
 });
 
 module.exports = ContributionItem;

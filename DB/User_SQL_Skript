@@ -93,48 +93,87 @@ CREATE TABLE judo_specifics (
 
 -- Tabelle contributions erstellen
 CREATE TABLE contributions (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),       -- UUID als Primärschlüssel
-    member_id UUID REFERENCES members(id),                -- UUID Referenz zu Mitgliedern
-    semester VARCHAR(20) NOT NULL,                        -- Semester (z.B. "Sommersemester")
-    year INTEGER DEFAULT EXTRACT(YEAR FROM CURRENT_DATE), --  2024
-    total_amount DECIMAL(10, 2) NOT NULL,                 -- Gesamter Betrag der Vorschreibung
-    due_date DATE NOT NULL,                               -- Fälligkeitsdatum
-    status VARCHAR(20) DEFAULT 'pending',                 -- 'pending', 'paid', 'inactive'
-    "createdAt" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,      -- Erstellungsdatum
-    "updatedAt" TIMESTAMP DEFAULT CURRENT_TIMESTAMP       -- Aktualisierungsdatum
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),         -- UUID als Primärschlüssel
+    member_id UUID REFERENCES members(id)ON DELETE CASCADE, -- UUID Referenz zu Mitgliedern
+    semester VARCHAR(20) NOT NULL,                          -- Semester (z.B. "Sommersemester")
+    year INTEGER DEFAULT EXTRACT(YEAR FROM CURRENT_DATE),   --  2024
+    total_amount DECIMAL(10, 2) NOT NULL,                   -- Gesamter Betrag der Vorschreibung
+    due_date DATE NOT NULL,                                 -- Fälligkeitsdatum
+    status VARCHAR(20) DEFAULT 'pending',                   -- 'pending', 'paid', 'inactive'
+    "createdAt" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,        -- Erstellungsdatum
+    "updatedAt" TIMESTAMP DEFAULT CURRENT_TIMESTAMP         -- Aktualisierungsdatum
 );
-
--- Trigger-Funktion für contributions
-CREATE OR REPLACE FUNCTION update_updated_at_column()
-RETURNS TRIGGER AS $$
-BEGIN
-    NEW.updatedAt = CURRENT_TIMESTAMP;      -- Setze updatedAt auf die aktuelle Zeit
-    RETURN NEW;
-END;
-$$ LANGUAGE plpgsql;
-
--- Trigger für contributions
-CREATE TRIGGER set_updatedAt
-BEFORE UPDATE ON contributions
-FOR EACH ROW
-EXECUTE FUNCTION update_updated_at_column();
 
 -- Tabelle contribution_items erstellen
 CREATE TABLE contribution_items (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),                         -- UUID als Primärschlüssel
-    contribution_id UUID REFERENCES contributions(id) ON DELETE CASCADE,    -- Beitrag (Vorschreibung) Referenz
     description VARCHAR(255) NOT NULL,                                      -- Bezeichnung der Posten (z.B. Mitgliedsbeitrag, Kursgebühr)
-    quantity INT NOT NULL DEFAULT 1,                                        -- Anzahl der Positionen
-    amount DECIMAL(10, 2) NOT NULL,                                         -- Betrag für die jeweilige Position
+    member_price DECIMAL(10, 2) NOT NULL,                                   -- Mitgliedspreis für die jeweilige Position
+    club_price DECIMAL(10, 2) NOT NULL,                                     -- Vereinspreis für die jeweilige Position
     "createdAt" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,                        -- Erstellungsdatum
     "updatedAt" TIMESTAMP DEFAULT CURRENT_TIMESTAMP                         -- Aktualisierungsdatum
 );
 
--- Trigger für contribution_items
-CREATE TRIGGER set_updatedAt_items
-BEFORE UPDATE ON contribution_items
-FOR EACH ROW
-EXECUTE FUNCTION update_updated_at_column();
+INSERT INTO contribution_items (id, description, member_price, club_price)
+VALUES 
+    (uuid_generate_v4(), 'Mitgliedsbeitrag', 75.00, 75.00),
+    (uuid_generate_v4(), 'Judocard', 28.00, 28.00),
+    (uuid_generate_v4(), 'Urkunde', 14.00, 14.00),
+    (uuid_generate_v4(), 'KYU-Heft', 5.00, 5.00),
+    (uuid_generate_v4(), 'Brustaufnäher (7,5 cm)', 5.00, 3.50),
+    (uuid_generate_v4(), 'Sticker (10 cm)', 0.50, 0.10);
+
+-- Tabelle für Bekleidung erstellen
+CREATE TABLE clothing_items (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),        -- UUID als Primärschlüssel
+    type VARCHAR(255) NOT NULL,                            -- Bekleidungsart (z.B. Judogi, Gürtel)
+    size VARCHAR(50),                                      -- Größe (z.B. 100-110, 120, etc.)
+    color VARCHAR(50),                                     -- Farbe (z.B. Weiß, Blau)
+    member_price DECIMAL(10, 2) NOT NULL,                  -- Preis für Mitglieder
+    club_price DECIMAL(10, 2) NOT NULL,                    -- Preis für den Verein
+    "createdAt" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,       -- Erstellungsdatum
+    "updatedAt" TIMESTAMP DEFAULT CURRENT_TIMESTAMP        -- Aktualisierungsdatum
+);
+
+INSERT INTO clothing_items (id, type, size, color, member_price, club_price)
+VALUES
+    -- Gürtel
+    (uuid_generate_v4(), 'Gürtel einfärbig', '220-330', 'wieß-braun', 5.00, 6.50),
+
+    -- DAX TODAI Weiß
+    (uuid_generate_v4(), 'Judogi (DAX TODAI)', '100-110', 'Weiß', 32.90, 27.50),
+    (uuid_generate_v4(), 'Judogi (DAX TODAI)', '120', 'Weiß', 34.90, 27.50),
+    (uuid_generate_v4(), 'Judogi (DAX TODAI)', '130', 'Weiß', 36.90, 29.50),
+    (uuid_generate_v4(), 'Judogi (DAX TODAI)', '140', 'Weiß', 38.90, 29.50),
+    (uuid_generate_v4(), 'Judogi (DAX TODAI)', '150', 'Weiß', 40.90, 31.50),
+    (uuid_generate_v4(), 'Judogi (DAX TODAI)', '160', 'Weiß', 42.90, 31.50),
+    (uuid_generate_v4(), 'Judogi (DAX TODAI)', '170', 'Weiß', 44.90, 33.50),
+    -- DAX KIDS Blau
+    (uuid_generate_v4(), 'Judogi (DAX KIDS)', '120', 'Blau', 45.50, 39.00),
+    (uuid_generate_v4(), 'Judogi (DAX KIDS)', '130', 'Blau', 48.50, 42.00),
+    (uuid_generate_v4(), 'Judogi (DAX KIDS)', '140', 'Blau', 52.50, 45.00),
+    (uuid_generate_v4(), 'Judogi (DAX KIDS)', '150', 'Blau', 56.50, 48.00),
+    (uuid_generate_v4(), 'Judogi (DAX KIDS)', '160', 'Blau', 61.50, 50.00),
+    (uuid_generate_v4(), 'Judogi (DAX KIDS)', '170', 'Blau', 65.50, 53.00),
+    (uuid_generate_v4(), 'Judogi (DAX KIDS)', '180', 'Blau', 70.50, 56.00),
+    -- DAX FUJI Weiß
+    (uuid_generate_v4(), 'Judogi (DAX FUJI)', '150', 'Weiß', 57.00, 48.50),
+    (uuid_generate_v4(), 'Judogi (DAX FUJI)', '160', 'Weiß', 57.00, 48.50),
+    (uuid_generate_v4(), 'Judogi (DAX FUJI)', '170', 'Weiß', 60.00, 51.00),
+    (uuid_generate_v4(), 'Judogi (DAX FUJI)', '180', 'Weiß', 62.00, 52.50),
+    (uuid_generate_v4(), 'Judogi (DAX FUJI)', '190', 'Weiß', 65.00, 55.50),
+    (uuid_generate_v4(), 'Judogi (DAX FUJI)', '200', 'Weiß', 67.00, 57.50);
+
+CREATE TABLE items_to_contribution (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),                           -- Primärschlüssel (UUID)
+    contribution_id UUID REFERENCES contributions(id) ON DELETE CASCADE,      -- Verweis auf die Beitragsvorschreibung (Foreign Key)
+    contribution_item_id UUID REFERENCES contribution_items(id),              -- Verweis auf ein Beitragsposten (z.B. Mitgliedsbeitrag)
+    clothing_item_id UUID REFERENCES clothing_items(id),                      -- Verweis auf ein Bekleidungsartikel (z.B. Judogi)
+    quantity INT NOT NULL DEFAULT 1,                                          -- Anzahl der jeweiligen Position
+    amount DECIMAL(10, 2) NOT NULL,                                           -- Gesamtpreis für diese Position (z.B. Menge * Preis)
+    "createdAt" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,                          -- Erstellungsdatum
+    "updatedAt" TIMESTAMP DEFAULT CURRENT_TIMESTAMP                           -- Letzte Aktualisierung
+);
 
 -- Blog Posts Tabelle mit UUID
 CREATE TABLE blog_posts (

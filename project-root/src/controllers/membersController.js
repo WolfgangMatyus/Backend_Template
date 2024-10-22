@@ -4,12 +4,43 @@ const JudoSpecifics = require('../models/judoSpecifics');
 const membersService = require('../services/membersService');
 
 const registerMember = async (req, res) => {
-    console.log(req.body);
-    const { addresses, judoSpecifics  } = req.body;
-    const memberData =  { member_since, first_name, last_name, date_of_birth, email, phone, guardian_name, guardian_contact, profile_photo } = req.body;
+    console.log(req.body); // Um zu sehen, was im Body angekommen ist
+
+    // Destrukturierung des Requests
+    const {
+        addresses,
+        judo_specifics, // Verwende den korrekten Schlüssel, der im Body erwartet wird
+        member_since,
+        first_name,
+        last_name,
+        date_of_birth,
+        email,
+        phone,
+        guardian_name,
+        guardian_contact,
+        profile_photo,
+    } = req.body;
+
+    // Optional: Erstelle ein Mitgliederdatenobjekt
+    const memberData = { 
+        member_since,
+        first_name,
+        last_name,
+        date_of_birth,
+        email,
+        phone,
+        guardian_name,
+        guardian_contact,
+        profile_photo,
+    };
+
+    // Hier kannst du prüfen, ob die Daten korrekt sind
+    console.log('Member Data:', memberData);
+    console.log('Addresses:', addresses);
+    console.log('Judo Specifics:', judoSpecifics);
 
     try {
-        const newMember = await membersService.registerMember(memberData, addresses, judoSpecifics);
+        const newMember = await membersService.registerMember(memberData, addresses, judo_specifics); // Achte darauf, dass judo_specifics hier korrekt ist
 
         res.status(201).json({ message: "Mitglied erfolgreich erstellt", member: newMember });
     } catch (error) {
@@ -17,6 +48,7 @@ const registerMember = async (req, res) => {
         res.status(500).json({ message: 'Fehler beim Erstellen des Mitglieds' });
     }
 };
+
 
 // Abrufen aller Mitglieder
 const getAllMembers = async (req, res) => {

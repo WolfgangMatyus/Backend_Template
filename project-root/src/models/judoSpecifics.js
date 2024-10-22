@@ -31,11 +31,11 @@ const JudoSpecifics = sequelize.define('JudoSpecifics', {
     },
     age_group: {
         type: DataTypes.STRING,
-        allowNull: false // Altersklasse ist Pflicht
+        allowNull: true 
     },
     max_fight_time: {
         type: DataTypes.STRING,
-        allowNull: false // Maximale Kampfzeit ist Pflicht
+        allowNull: true
     },
     weight_class: {
         type: DataTypes.STRING,
@@ -47,7 +47,7 @@ const JudoSpecifics = sequelize.define('JudoSpecifics', {
     },
     max_training_level: {
         type: DataTypes.STRING,
-        allowNull: false // Maximaler Kyu/Dan Grad ist Pflicht
+        allowNull: true // Maximaler Kyu/Dan Grad ist Pflicht
     },
     training_date: {
         type: DataTypes.DATE,

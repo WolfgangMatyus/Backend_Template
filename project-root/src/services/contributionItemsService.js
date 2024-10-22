@@ -7,7 +7,12 @@ const createContributionItem = async (data) => {
 
 // Alle Beitragsposten abrufen
 const getAllContributionItems = async () => {
-    return await ContributionItem.findAll();
+    try {
+        const items = await ContributionItem.findAll();
+        return items;
+    } catch (error) {
+        throw new Error('Fehler beim Abrufen der Beitragsposten'); // Fehlerbehandlung
+    }
 };
 
 // Beitragsposten nach ID abrufen

@@ -6,7 +6,6 @@ Server mit Node.js, Express und Postgres Datenbank
 
 ## Install required:
 node.js
-
 postgreSQL
 
 #### Express

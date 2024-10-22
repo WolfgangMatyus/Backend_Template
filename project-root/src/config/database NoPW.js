@@ -1,9 +1,9 @@
 const { Sequelize } = require('sequelize');
 
-// Hier die Datenbankverbindungsdaten anpassen
+// Hier die Datenbankverbindungsdaten
 const sequelize = new Sequelize('be_t_db', 'postgres', 'password', {
     host: 'localhost',
-    dialect: 'postgres', // oder 'mysql', 'sqlite', etc. abhängig von deiner Datenbank
+    dialect: 'postgres',
 });
 
 // Teste die Verbindung zur Datenbank

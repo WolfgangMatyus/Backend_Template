@@ -10,6 +10,8 @@ const userRoutes = require('./project-root/src/routes/userRoutes');
 const passwordRoutes = require('./project-root/src/routes/passwordRoutes');
 const contributionsRoutes = require('./project-root/src/routes/contributionsRoutes');
 const contributionItemsRoutes = require('./project-root/src/routes/contributionItemsRoutes');
+const clothingItemsRoutes = require('./project-root/src/routes/clothingItemsRoutes.js');
+const itemsToContributionRoutes = require('./project-root/src/routes/itemsToContributionRoutes');
 const judoSpecificsRoutes = require('./project-root/src/routes/judoSpecificsRoutes');
 
 const app = express();
@@ -26,14 +28,17 @@ app.use((req, res, next) => {
 });
 
 // Routen hinzufügen
-app.use('/api/v1/members', membersRoute);
-app.use('/api/v1/addresses', addressesRoutes);
 app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/users', userRoutes);
 app.use('/api/v1/password', passwordRoutes);
+app.use('/api/v1/members', membersRoute);
+app.use('/api/v1/addresses', addressesRoutes);
+app.use('/api/v1/judo-specifics', judoSpecificsRoutes);
 app.use('/api/v1/contributions', contributionsRoutes);
 app.use('/api/v1/contributionItems', contributionItemsRoutes);
-app.use('/api/v1/judo-specifics', judoSpecificsRoutes);
+app.use('/api/v1/clothingItems', clothingItemsRoutes);
+app.use('/api/v1/itemsToContribution', itemsToContributionRoutes);
+
 
 // Fehlerbehandlung Middleware
 app.use((err, req, res, next) => {
